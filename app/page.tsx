@@ -3,7 +3,6 @@ import CardVeiculo from "@/components/CardVeiculo";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import NavMarcas from "@/components/NavMarcas";
-import StickySearch from "@/components/StickySearch";
 import { Phone, Car, ShieldCheck, TrendingUp, CreditCard, MessageCircle } from "lucide-react";
 
 type Marca = { id: string; nome: string; logo_url: string | null };
@@ -35,7 +34,6 @@ export default async function Home({
   return (
     <main className="min-h-screen bg-gray-50">
       <Header />
-      <StickySearch marcas={(marcas ?? []).map((m) => m.nome)} />
       <Hero marcas={(marcas ?? []).map((m) => m.nome)} />
 
       {/* Diferenciais */}

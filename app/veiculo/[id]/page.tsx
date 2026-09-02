@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import VeiculoGaleria from "@/components/VeiculoGaleria";
 import Link from "next/link";
 import { ChevronLeft, CheckCircle2, Phone, CalendarDays, Gauge, Cog, Fuel, Palette, Calendar, Share2 } from "lucide-react";
+import StickySearch from "@/components/StickySearch";
 
 export const revalidate = 60;
 
@@ -49,6 +50,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
   return (
     <main className="min-h-screen bg-gray-50">
       <Header />
+      <StickySearch always />
 
       <div className="max-w-7xl mx-auto px-4 py-3">
         <Link href="/#estoque" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors">
