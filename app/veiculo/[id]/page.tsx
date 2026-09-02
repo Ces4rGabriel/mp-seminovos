@@ -1,21 +1,9 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 import { supabase, type Veiculo } from "@/lib/supabase";
 import Header from "@/components/Header";
-import Image from "next/image";
+import VeiculoGaleria from "@/components/VeiculoGaleria";
 import Link from "next/link";
-import {
-  ChevronLeft,
-  Gauge,
-  Cog,
-  Fuel,
-  Palette,
-  Calendar,
-  CheckCircle2,
-  Phone,
-  CalendarDays,
-  Share2,
-  Tag,
-} from "lucide-react";
+import { ChevronLeft, CheckCircle2, Phone, CalendarDays } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -28,11 +16,7 @@ function formatPreco(preco: number) {
   return preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 });
 }
 
-export default async function VeiculoPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function VeiculoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const { data: veiculo } = await supabase
@@ -49,144 +33,120 @@ export default async function VeiculoPage({
   const whatsappUrl = `https://wa.me/5500000000000?text=${whatsappMsg}`;
   const agendaMsg = `Olá! Gostaria de agendar uma visita para ver o ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}.`;
 
-  const ficha = [
-    { icon: Calendar,  label: "Ano",           value: veiculo.ano },
-    { icon: Gauge,     label: "Quilometragem",  value: formatKm(veiculo.km) },
-    { icon: Cog,       label: "Cambio",         value: veiculo.cambio },
-    { icon: Fuel,      label: "Combustivel",    value: veiculo.combustivel },
-    { icon: Palette,   label: "Cor",            value: veiculo.cor },
-    { icon: Tag,       label: "Tipo",           value: veiculo.tipo },
-  ];
-
   const fotos = veiculo.fotos ?? [];
-  const capaUrl = fotos[0] ?? null;
+  const palavras = veiculo.modelo.split(" ");
+  const modeloDestaqueWord = palavras[0];
+  const modeloResto = palavras.slice(1).join(" ");
+
+  const ficha = [
+    { label: "Ano",           value: String(veiculo.ano) },
+    { label: "Quilometragem", value: formatKm(veiculo.km) },
+    { label: "Câmbio",        value: veiculo.cambio },
+    { label: "Combustível",   value: veiculo.combustivel },
+    { label: "Cor",           value: veiculo.cor },
+    { label: "Tipo",          value: veiculo.tipo },
+  ];
 
   return (
     <main className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <VeiculoGaleria fotos={fotos} titulo={`${veiculo.marca} ${veiculo.modelo}`} />
+
+      <div className="max-w-7xl mx-auto px-4 pt-3 pb-1">
         <Link
           href="/#estoque"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={13} />
           Voltar ao estoque
         </Link>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-16">
+      <div className="max-w-7xl mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-6 pt-2">
 
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-200 shadow-sm">
-              {capaUrl ? (
-                <Image
-                  src={capaUrl}
-                  alt={`${veiculo.marca} ${veiculo.modelo}`}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
-                  Sem foto
-                </div>
-              )}
-              {veiculo.destaque && (
-                <span
-                  className="absolute top-3 left-3 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full"
-                  style={{ background: "#00B040" }}
-                >
-                  Destaque
-                </span>
-              )}
-              {veiculo.vendido && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <span className="text-white text-2xl font-black uppercase tracking-widest">Vendido</span>
-                </div>
-              )}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-0.5">{veiculo.marca}</p>
+              <h1 className="text-3xl font-black uppercase tracking-wide leading-none">
+                <span style={{ color: "#16A34A" }}>{modeloDestaqueWord}</span>
+                {modeloResto && <span className="text-gray-800"> {modeloResto}</span>}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-sm text-gray-500">
+                <span>{veiculo.ano}</span>
+                <span className="text-gray-300">·</span>
+                <span>{formatKm(veiculo.km)}</span>
+                <span className="text-gray-300">·</span>
+                <span>{veiculo.cor}</span>
+                {veiculo.destaque && (
+                  <>
+                    <span className="text-gray-300">·</span>
+                    <span className="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ background: "#16A34A" }}>
+                      Destaque
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
-            {fotos.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {fotos.map((url, i) => (
-                  <div key={i} className="relative shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-gray-200">
-                    <Image src={url} alt={`Foto ${i + 1}`} fill className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Ficha técnica</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {ficha.map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="flex items-start gap-2.5">
-                    <Icon size={16} strokeWidth={1.5} className="shrink-0 mt-0.5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-400">{label}</p>
-                      <p className="text-sm font-semibold text-gray-800">{String(value)}</p>
-                    </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">Ficha técnica</h2>
+              <div className="grid grid-cols-3 gap-x-4 gap-y-5">
+                {ficha.map(({ label, value }) => (
+                  <div key={label} className="border-l-2 border-gray-100 pl-3">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">{label}</p>
+                    <p className="text-sm font-bold text-gray-800">{value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {veiculo.opcionais && veiculo.opcionais.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Opcionais</h2>
-                <div className="flex flex-wrap gap-2">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Itens e opcionais</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-4">
                   {veiculo.opcionais.map((op) => (
-                    <span key={op} className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5">
-                      <CheckCircle2 size={12} style={{ color: "#00B040" }} />
+                    <div key={op} className="flex items-center gap-2 text-sm text-gray-700">
+                      <CheckCircle2 size={14} className="shrink-0" style={{ color: "#16A34A" }} />
                       {op}
-                    </span>
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
             {veiculo.descricao && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Descrição</h2>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Sobre este veículo</h2>
                 <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{veiculo.descricao}</p>
               </div>
             )}
           </div>
 
           <div className="lg:col-span-1">
-            <div className="sticky top-20 flex flex-col gap-4">
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">{veiculo.marca}</p>
-                <h1 className="text-xl font-black text-gray-900 uppercase tracking-wide leading-tight">
-                  {veiculo.modelo}
-                </h1>
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 mb-5 text-xs text-gray-500">
-                  <span>{veiculo.ano}</span>
-                  <span>&middot;</span>
-                  <span>{formatKm(veiculo.km)}</span>
-                  <span>&middot;</span>
-                  <span>{veiculo.cor}</span>
-                </div>
-                <div className="border-t border-gray-100 pt-4 mb-5">
+            <div className="sticky top-20 flex flex-col gap-4 pt-2">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="mb-6">
                   {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
-                    <p className="text-xs font-medium line-through mb-0.5" style={{ color: "#DC2626" }}>
+                    <p className="text-sm font-medium line-through mb-1" style={{ color: "#DC2626" }}>
                       FIPE {formatPreco(veiculo.fipe_preco)}
                     </p>
                   )}
-                  <p className="text-2xl font-black" style={{ color: "#16A34A" }}>
+                  <p className="text-3xl font-black leading-none" style={{ color: "#16A34A" }}>
                     {formatPreco(veiculo.preco)}
                   </p>
+                  <p className="text-xs text-gray-400 mt-1.5">à vista · sujeito à disponibilidade</p>
                 </div>
+
                 {!veiculo.vendido ? (
                   <div className="flex flex-col gap-3">
                     <a
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 text-white font-bold py-3 rounded-xl text-sm cursor-pointer"
+                      className="flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl text-sm cursor-pointer"
                       style={{ background: "#00B040" }}
                     >
                       <Phone size={16} />
@@ -196,21 +156,21 @@ export default async function VeiculoPage({
                       href={`https://wa.me/5500000000000?text=${encodeURIComponent(agendaMsg)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 text-gray-700 font-semibold py-3 rounded-xl text-sm border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="flex items-center justify-center gap-2 text-gray-700 font-semibold py-3.5 rounded-xl text-sm border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <CalendarDays size={16} />
                       Agendar visita
                     </a>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-3 rounded-xl bg-gray-100 text-gray-500 text-sm font-semibold">
+                  <div className="flex items-center justify-center py-4 rounded-xl bg-gray-100 text-gray-500 text-sm font-semibold">
                     Veículo vendido
                   </div>
                 )}
-              </div>
-              <div className="flex items-center justify-center gap-2 text-gray-400 text-xs font-medium py-2">
-                <Share2 size={14} />
-                Compartilhar este veículo
+
+                <p className="text-[10px] text-gray-400 text-center mt-4 leading-relaxed">
+                  Entre em contato pelo WhatsApp para mais informações sobre condições de pagamento e financiamento.
+                </p>
               </div>
             </div>
           </div>
