@@ -24,6 +24,7 @@ const vazio = {
   ano: new Date().getFullYear(),
   km: 0,
   preco: 0,
+  fipe_preco: null as number | null,
   cor: "",
   cambio: "Manual" as Veiculo["cambio"],
   combustivel: "Flex" as Veiculo["combustivel"],
@@ -198,6 +199,10 @@ export default function FormVeiculo({ veiculo, onFechar, onSalvo }: Props) {
               <div>
                 <label className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 block mb-1.5">Preço *</label>
                 <input type="number" value={dados.preco} onChange={(e) => set("preco", Number(e.target.value))} className={inp} />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 block mb-1.5">Preço FIPE</label>
+                <input type="number" value={dados.fipe_preco ?? ""} onChange={(e) => set("fipe_preco", e.target.value ? Number(e.target.value) : null)} className={inp} placeholder="Opcional" />
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3">

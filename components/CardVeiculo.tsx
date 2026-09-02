@@ -63,7 +63,11 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
 
           <div className="border-t border-gray-100 pt-4 flex items-end justify-between">
             <div>
-              <p className="text-xs text-gray-400 mb-0.5">Preço</p>
+              {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
+                <p className="text-xs text-gray-400 line-through mb-0.5">
+                  FIPE {formatPreco(veiculo.fipe_preco)}
+                </p>
+              )}
               <p className="text-2xl font-black" style={{ color: "#003314" }}>{formatPreco(veiculo.preco)}</p>
             </div>
             <span className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: "#f0fdf4", color: "#003314" }}>

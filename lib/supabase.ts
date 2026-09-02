@@ -7,6 +7,7 @@ export type Veiculo = {
   ano: number;
   km: number;
   preco: number;
+  fipe_preco: number | null;
   cor: string;
   cambio: "Manual" | "Automático" | "CVT";
   combustivel: "Flex" | "Gasolina" | "Diesel" | "Elétrico" | "Híbrido";

@@ -171,7 +171,11 @@ export default async function VeiculoPage({
                   <span>{veiculo.cor}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-4 mb-5">
-                  <p className="text-xs text-gray-400 mb-0.5">Preço</p>
+                  {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
+                    <p className="text-xs text-gray-400 line-through mb-0.5">
+                      FIPE {formatPreco(veiculo.fipe_preco)}
+                    </p>
+                  )}
                   <p className="text-2xl font-black" style={{ color: "#00B040" }}>
                     {formatPreco(veiculo.preco)}
                   </p>
