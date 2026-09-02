@@ -38,41 +38,31 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
         </div>
 
         {/* Info */}
-        <div className="p-5">
-          <div className="mb-3">
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{veiculo.marca}</p>
-            <h3 className="text-gray-900 font-black text-lg leading-tight">{veiculo.modelo}</h3>
+        <div className="p-3">
+          <div className="mb-2">
+            <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider">{veiculo.marca}</p>
+            <h3 className="text-gray-900 font-black text-sm leading-tight">{veiculo.modelo}</h3>
           </div>
 
-          <div className="flex items-center gap-3 text-gray-500 text-xs mb-4 flex-wrap">
-            <span className="flex items-center gap-1">
-              <Calendar size={12} />
+          <div className="flex items-center gap-2 text-gray-500 text-[10px] mb-3 flex-wrap">
+            <span className="flex items-center gap-0.5">
+              <Calendar size={10} />
               {veiculo.ano}
             </span>
             <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <span className="flex items-center gap-1">
-              <Gauge size={12} />
+            <span className="flex items-center gap-0.5">
+              <Gauge size={10} />
               {veiculo.km.toLocaleString("pt-BR")} km
-            </span>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <span className="flex items-center gap-1">
-              <Cog size={12} />
-              {veiculo.cambio}
             </span>
           </div>
 
-          <div className="border-t border-gray-100 pt-4 flex items-end justify-between">
-            <div>
-              {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
-                <p className="text-xs text-gray-400 line-through mb-0.5">
-                  FIPE {formatPreco(veiculo.fipe_preco)}
-                </p>
-              )}
-              <p className="text-2xl font-black" style={{ color: "#003314" }}>{formatPreco(veiculo.preco)}</p>
-            </div>
-            <span className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: "#f0fdf4", color: "#003314" }}>
-              Ver detalhes →
-            </span>
+          <div className="border-t border-gray-100 pt-2">
+            {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
+              <p className="text-[10px] text-gray-400 line-through">
+                FIPE {formatPreco(veiculo.fipe_preco)}
+              </p>
+            )}
+            <p className="text-base font-black" style={{ color: "#003314" }}>{formatPreco(veiculo.preco)}</p>
           </div>
         </div>
       </div>
