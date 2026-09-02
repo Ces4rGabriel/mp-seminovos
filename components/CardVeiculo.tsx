@@ -12,10 +12,10 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
 
   return (
     <Link href={`/veiculo/${veiculo.id}`} className="group block">
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-green-300 transition-all duration-300">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-xl hover:border-green-300 transition-all duration-300">
 
         {/* Foto */}
-        <div className="relative aspect-[16/10] bg-gray-100">
+        <div className="relative aspect-[16/7] bg-gray-100">
           {foto ? (
             <Image
               src={foto}
