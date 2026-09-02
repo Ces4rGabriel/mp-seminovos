@@ -28,19 +28,25 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
           <button
             key={id}
             onClick={() => selecionar(nome)}
-            className={`shrink-0 flex flex-col items-center gap-2 px-5 py-4 rounded-2xl border-2 transition-all min-w-[90px] ${
-              ativo ? "border-transparent text-white shadow-lg" : "border-gray-200 bg-white text-gray-600 hover:border-green-400"
-            }`}
-            style={ativo ? { background: "#003314" } : {}}
+            className="shrink-0 flex flex-col items-center gap-1.5 transition-all group"
           >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden ${ativo ? "bg-white/10" : "bg-gray-50"}`}>
+            <div
+              className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden transition-all ring-2 ${
+                ativo
+                  ? "ring-green-600 shadow-md"
+                  : "ring-gray-200 bg-gray-50 group-hover:ring-green-300"
+              }`}
+              style={ativo ? { background: "#e8f5e9" } : {}}
+            >
               {logo_url ? (
-                <Image src={logo_url} alt={nome} width={48} height={48} className="object-contain w-full h-full p-1" />
+                <Image src={logo_url} alt={nome} width={48} height={48} className="object-contain w-10 h-10" />
               ) : (
                 <span className="text-2xl">🚗</span>
               )}
             </div>
-            <span className="text-xs font-bold">{nome}</span>
+            <span className={`text-[10px] font-semibold ${ativo ? "text-green-700" : "text-gray-500 group-hover:text-gray-700"}`}>
+              {nome}
+            </span>
           </button>
         );
       })}

@@ -70,7 +70,6 @@ export default async function Home({
 
       {/* Estoque */}
       <section id="estoque" className="bg-white">
-        <div className="h-1 w-full" style={{ background: "#00B040" }} />
         <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
