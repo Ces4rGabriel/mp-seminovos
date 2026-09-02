@@ -15,7 +15,7 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
       <div className="bg-white border border-gray-200 rounded-md overflow-hidden hover:shadow-xl hover:border-green-300 transition-all duration-300">
 
         {/* Foto */}
-        <div className="relative aspect-[16/7] bg-gray-100">
+        <div className="relative aspect-[16/9] bg-gray-100">
           {foto ? (
             <Image
               src={foto}
