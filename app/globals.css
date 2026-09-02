@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --mp-dark: #003314;
+  --mp-green: #00B040;
+  --mp-green-hover: #009935;
+  --background: #ffffff;
+  --foreground: #111111;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.btn-primary {
+  background: var(--mp-green);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--mp-green-hover); }
+
+.btn-outline {
+  border: 2px solid var(--mp-dark);
+  color: var(--mp-dark);
+  font-weight: 600;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+.btn-outline:hover { background: var(--mp-dark); color: #fff; }
+
+/* ── Dark mode admin ── */
+[data-theme="dark"] .bg-white        { background-color: #111827 !important; }
+[data-theme="dark"] .bg-gray-50      { background-color: #1a2235 !important; }
+[data-theme="dark"] .bg-gray-100     { background-color: #1f2937 !important; }
+[data-theme="dark"] .text-gray-900   { color: #f3f4f6 !important; }
+[data-theme="dark"] .text-gray-700   { color: #d1d5db !important; }
+[data-theme="dark"] .text-gray-600   { color: #9ca3af !important; }
+[data-theme="dark"] .text-gray-500   { color: #6b7280 !important; }
+[data-theme="dark"] .text-gray-400   { color: #4b5563 !important; }
+[data-theme="dark"] .text-gray-300   { color: #374151 !important; }
+[data-theme="dark"] .border-gray-200 { border-color: #1f2937 !important; }
+[data-theme="dark"] .border-gray-100 { border-color: #1a2235 !important; }
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select           { background-color: #1a2235 !important; color: #f3f4f6 !important; border-color: #1f2937 !important; }
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder { color: #374151 !important; }
+[data-theme="dark"] .opacity-60      { opacity: 0.4 !important; }
