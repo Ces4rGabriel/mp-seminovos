@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Image from "next/image";
@@ -14,13 +14,24 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
 
   const [offset, setOffset] = useState(0);
   const [dragDelta, setDragDelta] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(marcas.length);
   const startX = useRef<number | null>(null);
   const dragging = useRef(false);
 
+  useEffect(() => {
+    const update = () => {
+      const n = window.innerWidth < 640 ? 5 : marcas.length;
+      setVisibleCount(Math.min(n, marcas.length));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [marcas.length]);
+
   if (marcas.length === 0) return null;
 
-  const displayed = marcas.map((_, i) => marcas[(i + offset) % marcas.length]);
-  const itemPct = `${100 / marcas.length}%`;
+  const displayed = Array.from({ length: visibleCount }, (_, i) => marcas[(i + offset) % marcas.length]);
+  const itemPct = `${100 / visibleCount}%`;
 
   function selecionar(nome: string) {
     if (dragging.current) return;
