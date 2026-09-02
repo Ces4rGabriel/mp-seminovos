@@ -29,7 +29,7 @@ export default function Header() {
         </nav>
 
         <a
-          href="https://wa.me/5500000000000"
+          href="https://wa.me/5531999561226"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:flex items-center gap-2 text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer"
@@ -49,7 +49,7 @@ export default function Header() {
           <a href="#estoque" onClick={() => setMenuAberto(false)}>Estoque</a>
           <a href="#marcas" onClick={() => setMenuAberto(false)}>Por marca</a>
           <a href="#contato" onClick={() => setMenuAberto(false)}>Contato</a>
-          <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer"
+          <a href="https://wa.me/5531999561226" target="_blank" rel="noopener noreferrer"
             className="text-white text-center font-semibold py-2 rounded-lg" style={{ background: "#00B040" }}>
             WhatsApp
           </a>

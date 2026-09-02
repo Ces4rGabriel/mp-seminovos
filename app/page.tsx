@@ -112,7 +112,7 @@ export default async function Home({
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Ficou com dúvida?</h2>
           <p className="text-gray-500 text-sm mb-8">Nossa equipe está pronta para te ajudar a encontrar o veículo certo.</p>
           <a
-            href="https://wa.me/5500000000000"
+            href="https://wa.me/5531999561226"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-white font-semibold px-8 py-3 rounded-xl text-sm cursor-pointer"

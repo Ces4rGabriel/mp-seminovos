@@ -31,7 +31,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
   const whatsappMsg = encodeURIComponent(
     `Olá! Tenho interesse no ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano} anunciado no site da MP Seminovos.`
   );
-  const whatsappUrl = `https://wa.me/5500000000000?text=${whatsappMsg}`;
+  const whatsappUrl = `https://wa.me/5531999561226?text=${whatsappMsg}`;
   const agendaMsg = `Olá! Gostaria de agendar uma visita para ver o ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}.`;
 
   const fotos = veiculo.fotos ?? [];
@@ -145,7 +145,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
                       <Phone size={15} />
                       Tenho interesse
                     </a>
-                    <a href={`https://wa.me/5500000000000?text=${encodeURIComponent(agendaMsg)}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/5531999561226?text=${encodeURIComponent(agendaMsg)}`} target="_blank" rel="noopener noreferrer"
                       className="flex items-center justify-center gap-2 font-semibold py-3.5 rounded-xl text-sm border-2 transition-colors"
                       style={{ color: "#00B040", borderColor: "#00B040" }}>
                       <CalendarDays size={15} />
