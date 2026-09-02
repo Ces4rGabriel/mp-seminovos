@@ -5,8 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "MP Veículos",
-  description: "Encontre o seu próximo veículo seminovo com qualidade e segurança na MP Seminovos.",
+  title: {
+    default: "Compre e Financie Carros Seminovos | MP Seminovos",
+    template: "%s | MP Seminovos",
+  },
+  description: "Compre carros seminovos com qualidade, procedência e as melhores condições de financiamento na MP Seminovos.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

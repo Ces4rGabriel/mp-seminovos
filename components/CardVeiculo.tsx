@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Gauge, Calendar, Cog } from "lucide-react";
+import { Gauge, Calendar } from "lucide-react";
 import type { Veiculo } from "@/lib/supabase";
+import FavButton from "@/components/FavButton";
 
 function formatPreco(valor: number) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -28,13 +29,8 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
             <div className="flex items-center justify-center h-full text-gray-300 text-sm">Sem foto</div>
           )}
 
-          {veiculo.destaque && (
-            <span className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow" style={{ background: "#00B040" }}>
-              ⭐ Destaque
-            </span>
-          )}
-
-          <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+          <FavButton id={veiculo.id} />
+          <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
 
         {/* Info — altura fixa para uniformidade */}
