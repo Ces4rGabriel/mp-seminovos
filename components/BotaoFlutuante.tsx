@@ -19,7 +19,7 @@ export default function BotaoFlutuante({ whatsappUrl }: { whatsappUrl: string })
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe transition-transform duration-300 ${
+      className={`fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe transition-transform duration-300 md:hidden ${
         visivel ? "translate-y-0" : "translate-y-full"
       }`}
       style={{
