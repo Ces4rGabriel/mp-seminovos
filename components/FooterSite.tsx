@@ -137,28 +137,37 @@ export default async function FooterSite() {
         </section>
       )}
 
-      {/* Copyright + redes sociais */}
+      {/* Copyright + redes sociais + Audis */}
       <div className="py-4 border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-400">
             © {new Date().getFullYear()} {nomeLoja} · Todos os direitos reservados
           </p>
-          {(instagram || facebook) && (
-            <div className="flex items-center gap-3">
-              {instagram && (
-                <a href={instagram} target="_blank" rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-gray-700 transition-colors">
-                  <Instagram size={16} />
-                </a>
-              )}
-              {facebook && (
-                <a href={facebook} target="_blank" rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-gray-700 transition-colors">
-                  <Facebook size={16} />
-                </a>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            {(instagram || facebook) && (
+              <div className="flex items-center gap-3">
+                {instagram && (
+                  <a href={instagram} target="_blank" rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+                    <Instagram size={16} />
+                  </a>
+                )}
+                {facebook && (
+                  <a href={facebook} target="_blank" rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+                    <Facebook size={16} />
+                  </a>
+                )}
+              </div>
+            )}
+            <p className="text-xs text-gray-400">
+              Feito pela{" "}
+              <a href="https://audis.online" target="_blank" rel="noopener noreferrer"
+                className="font-bold cursor-pointer" style={{ color: "#7c3aed" }}>
+                AUDIS
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

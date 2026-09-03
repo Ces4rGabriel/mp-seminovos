@@ -30,6 +30,12 @@ export default function CardVeiculo({ veiculo }: { veiculo: Veiculo }) {
           )}
 
           <FavButton id={veiculo.id} />
+          {veiculo.fipe_preco && veiculo.fipe_preco > veiculo.preco && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-white text-[9px] font-bold uppercase tracking-wide shadow"
+              style={{ background: "#16A34A" }}>
+              ↓ Abaixo da FIPE
+            </div>
+          )}
           <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
 

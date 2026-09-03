@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import NavMarcas from "@/components/NavMarcas";
 import FooterSite from "@/components/FooterSite";
+import TickerBar from "@/components/TickerBar";
 import { Car } from "lucide-react";
 
 type Marca = { id: string; nome: string; logo_url: string | null };
@@ -37,6 +38,7 @@ export default async function Home({
     <main className="min-h-screen bg-gray-50">
       <Header />
       <Hero marcas={(marcas ?? []).map((m) => m.nome)} />
+      <TickerBar />
 
       {/* Navegação por marca */}
       {(marcas ?? []).length > 0 && (
