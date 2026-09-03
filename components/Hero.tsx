@@ -40,34 +40,34 @@ export default function Hero({ marcas = [] }: { marcas?: string[] }) {
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Linha principal: busca + botão */}
-          <div className="flex items-center gap-0">
+          <div className="flex items-center gap-2 px-2 py-2">
             <div className="relative flex-1">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Buscar por modelo ou versão..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && pesquisar()}
-                className="w-full pl-10 pr-3 py-3.5 text-sm text-gray-900 focus:outline-none placeholder-gray-400"
+                className="w-full pl-9 pr-3 py-2.5 text-sm text-gray-900 focus:outline-none placeholder-gray-400 bg-transparent"
               />
             </div>
 
             {/* Botão filtros — mobile */}
             <button
               onClick={() => setFiltrosAbertos(!filtrosAbertos)}
-              className={`md:hidden flex items-center justify-center w-11 h-11 shrink-0 mr-1 rounded-xl transition-colors ${
+              className={`md:hidden flex items-center justify-center w-9 h-9 shrink-0 rounded-xl transition-colors ${
                 temFiltro ? "text-white" : "text-gray-400"
               }`}
               style={temFiltro ? { background: "#00B040" } : {}}
               title="Filtros"
             >
-              <SlidersHorizontal size={16} />
+              <SlidersHorizontal size={15} />
             </button>
 
             <button
               onClick={pesquisar}
-              className="shrink-0 text-white font-bold px-5 py-3.5 text-sm uppercase tracking-wider transition-colors md:rounded-none md:rounded-r-2xl"
+              className="shrink-0 text-white font-bold px-5 py-2.5 text-sm uppercase tracking-wider rounded-xl transition-colors"
               style={{ background: "#00B040" }}
               onMouseEnter={e => e.currentTarget.style.background = "#009935"}
               onMouseLeave={e => e.currentTarget.style.background = "#00B040"}
