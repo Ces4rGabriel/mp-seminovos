@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase, type Veiculo } from "@/lib/supabase";
-import { Plus, Trash2, Edit3, Eye, EyeOff, BadgeCheck, Car } from "lucide-react";
+import { Plus, Trash2, Edit3, Eye, EyeOff, BadgeCheck, Car, Search, X } from "lucide-react";
 import FormVeiculo from "@/components/FormVeiculo";
 import Image from "next/image";
 
@@ -16,6 +16,7 @@ export default function AdminVeiculos() {
   const [editando, setEditando] = useState<Veiculo | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState<"todos" | "disponiveis" | "vendidos">("todos");
+  const [busca, setBusca] = useState("");
 
   useEffect(() => { carregarVeiculos(); }, []);
 
@@ -49,9 +50,18 @@ export default function AdminVeiculos() {
     carregarVeiculos();
   }
 
-  const filtrados = veiculos.filter(v =>
-    filtro === "todos" ? true : filtro === "vendidos" ? v.vendido : !v.vendido
-  );
+  const termo = busca.toLowerCase().trim();
+  const filtrados = veiculos.filter(v => {
+    const passaFiltro = filtro === "todos" ? true : filtro === "vendidos" ? v.vendido : !v.vendido;
+    if (!passaFiltro) return false;
+    if (!termo) return true;
+    return (
+      v.marca.toLowerCase().includes(termo) ||
+      v.modelo.toLowerCase().includes(termo) ||
+      String(v.ano).includes(termo) ||
+      v.cor.toLowerCase().includes(termo)
+    );
+  });
 
   const stats = {
     total: veiculos.length,
@@ -91,6 +101,26 @@ export default function AdminVeiculos() {
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Vendidos</p>
           <p className="text-3xl font-black text-gray-400">{stats.vendidos}</p>
         </div>
+      </div>
+
+      {/* Busca */}
+      <div className="relative mb-3">
+        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        <input
+          type="text"
+          placeholder="Buscar por marca, modelo, ano ou cor..."
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+          className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-9 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 transition-all"
+        />
+        {busca && (
+          <button
+            onClick={() => setBusca("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
 
       {/* Filtros */}
