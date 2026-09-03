@@ -34,7 +34,9 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
   const peekCount = visibleCount < marcas.length ? visibleCount + 1 : visibleCount;
   const displayed = Array.from({ length: peekCount }, (_, i) => marcas[(i + offset) % marcas.length]);
   // Largura por item: divida pelos visíveis reais (o extra fica parcialmente cortado)
-  const itemPct = `${100 / visibleCount}%`;
+  const itemPct = visibleCount < marcas.length
+    ? `${100 / (visibleCount + 0.5)}%`
+    : `${100 / visibleCount}%`;
 
   function selecionar(nome: string) {
     if (dragging.current) return;

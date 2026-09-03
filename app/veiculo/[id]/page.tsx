@@ -1,6 +1,7 @@
 ﻿import { notFound } from "next/navigation";
 import { supabase, type Veiculo } from "@/lib/supabase";
 import Header from "@/components/Header";
+import FooterSite from "@/components/FooterSite";
 import VeiculoGaleria from "@/components/VeiculoGaleria";
 import Link from "next/link";
 import { ChevronLeft, CheckCircle2, Phone, CalendarDays, Gauge, Cog, Fuel, Palette, Calendar, Share2 } from "lucide-react";
@@ -173,9 +174,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      <footer className="py-5 border-t border-gray-200 text-center text-xs text-gray-400 bg-white">
-        © {new Date().getFullYear()} MP Seminovos · Todos os direitos reservados
-      </footer>
+      <FooterSite />
     </main>
   );
 }
