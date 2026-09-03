@@ -5,6 +5,7 @@ import FooterSite from "@/components/FooterSite";
 import VeiculoGaleria from "@/components/VeiculoGaleria";
 import Link from "next/link";
 import { ChevronLeft, CheckCircle2, Phone, CalendarDays, Gauge, Cog, Fuel, Palette, Calendar, Share2 } from "lucide-react";
+import BotaoFlutuante from "@/components/BotaoFlutuante";
 
 export const revalidate = 60;
 
@@ -77,7 +78,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
 
       {!veiculo.vendido ? (
         <div className="flex flex-col gap-2.5">
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
+          <a id="cta-principal" href={whatsappUrl} target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl text-sm"
             style={{ background: "#00B040" }}>
             <Phone size={15} />
@@ -172,6 +173,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {!veiculo.vendido && <BotaoFlutuante whatsappUrl={whatsappUrl} />}
       <FooterSite />
     </main>
   );
