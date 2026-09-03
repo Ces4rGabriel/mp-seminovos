@@ -66,7 +66,7 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
       {/* Scroll nativo */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto gap-0 pb-1"
+        className="flex overflow-x-auto gap-0 py-2"
         style={{
           scrollSnapType: "x mandatory",
           WebkitOverflowScrolling: "touch",
