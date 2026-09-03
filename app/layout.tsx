@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
-const outfit = Outfit({ subsets: ["latin"], display: "swap", variable: "--font-outfit" });
+const nunito = Nunito({ subsets: ["latin"], display: "swap", variable: "--font-brand" });
 
 export const metadata: Metadata = {
   title: {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${outfit.variable}`}>{children}</body>
+      <body className={`${inter.className} ${nunito.variable}`}>{children}</body>
     </html>
   );
 }
