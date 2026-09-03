@@ -66,90 +66,108 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!autenticado) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #002e12 0%, #003314cf 55%, #003918f2 100%)" }}
-      >
-        {/* Brilho suave */}
+      <div className="min-h-screen flex flex-col md:flex-row">
+        {/* Painel esquerdo/topo: dark green + marketing */}
         <div
-          className="absolute -top-60 -left-60 w-[600px] h-[600px] rounded-full blur-3xl opacity-15"
-          style={{ background: "#00B040" }}
-        />
-        <div
-          className="absolute -bottom-60 -right-60 w-[600px] h-[600px] rounded-full blur-3xl opacity-10"
-          style={{ background: "#00cc4d" }}
-        />
-
-        {/* Modal glassmorphism */}
-        <div
-          className="relative z-10 w-full max-w-sm mx-4 md:mx-0 rounded-3xl px-8 py-10 min-h-screen md:min-h-0 flex flex-col justify-center"
+          className="relative md:w-1/2 flex flex-col justify-between px-8 py-10 overflow-hidden"
           style={{
-            background: "rgba(255, 255, 255, 0.55)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255, 255, 255, 0.7)",
-            boxShadow: "0 8px 40px rgba(0, 51, 20, 0.12)",
+            background: "linear-gradient(160deg, #001208 0%, #002010 50%, #001a0a 100%)",
+            minHeight: "clamp(260px, 42vh, 380px)",
           }}
         >
-          {/* Logo + título */}
-          <div className="text-center mb-10">
-            <div className="flex justify-center mb-5">
-              <Image
-                src="/logos/mp/logo-seminovos-bg-green.png"
-                alt="MP Seminovos"
-                width={72}
-                height={72}
-                className="rounded-2xl shadow-lg"
-                style={{ width: 72, height: 72 }}
-              />
+          {/* Orbs */}
+          <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-25" style={{ background: "#00B040" }} />
+          <div className="absolute -bottom-20 right-0 w-56 h-56 rounded-full blur-3xl opacity-15" style={{ background: "#00cc4d" }} />
+
+          {/* Logo row */}
+          <div className="relative z-10 flex items-center gap-3">
+            <Image
+              src="/logos/mp/logo-seminovos-bg-green.png"
+              alt="MP Seminovos"
+              width={38}
+              height={38}
+              className="rounded-xl shadow-md"
+              style={{ width: 38, height: 38 }}
+            />
+            <span className="font-bold text-white text-sm tracking-widest uppercase">MP Seminovos</span>
+          </div>
+
+          {/* Headline */}
+          <div className="relative z-10 mt-auto pt-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px w-8 shrink-0" style={{ background: "#00B040" }} />
+              <p className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#4ade80" }}>
+                Sistema de Gestão
+              </p>
             </div>
-            <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#00B040" }}>
-              Gestão de estoque
+            <h1 className="text-3xl md:text-4xl font-black text-white leading-tight">
+              Controle total<br />
+              do seu{" "}
+              <span style={{ color: "#4ade80" }}>estoque.</span>
+            </h1>
+            <p className="text-gray-400 mt-3 text-sm leading-relaxed max-w-xs">
+              Gerencie veículos, marcas e configurações em um só lugar, com agilidade.
             </p>
-            <h1 className="text-2xl font-black text-gray-900 uppercase">MP Seminovos</h1>
-            <p className="text-sm mt-1 text-gray-900 lowercase">Qualidade e agilidade</p>
           </div>
+        </div>
 
-          {/* Formulário */}
-          <div className="space-y-5">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider block mb-2 text-gray-900">
-                Senha de acesso
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && login()}
-                className="w-full rounded-xl text-gray-900 placeholder-gray-400 px-4 py-3 text-base focus:outline-none transition-all"
+        {/* Painel direito/baixo: formulário */}
+        <div className="flex-1 flex flex-col justify-center bg-white px-8 py-12">
+          <div className="w-full max-w-sm mx-auto">
+            <h2 className="text-3xl font-black text-gray-900 mb-1">Entrar no sistema.</h2>
+            <p className="text-gray-500 text-sm mb-8">
+              Acesse o painel de gestão da MP Seminovos.
+            </p>
+
+            <div className="space-y-5">
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider block mb-2 text-gray-700">
+                  Senha de acesso
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••••"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && login()}
+                  className="w-full rounded-xl text-gray-900 placeholder-gray-300 px-4 py-3.5 text-base focus:outline-none transition-all"
+                  style={{
+                    background: "#f9fafb",
+                    border: erro ? "2px solid #ef4444" : "2px solid #e5e7eb",
+                  }}
+                  onFocus={e => { e.currentTarget.style.border = "2px solid #00B040"; e.currentTarget.style.background = "#fff"; }}
+                  onBlur={e => { e.currentTarget.style.border = erro ? "2px solid #ef4444" : "2px solid #e5e7eb"; e.currentTarget.style.background = "#f9fafb"; }}
+                />
+                {erro && <p className="text-red-500 text-xs mt-1.5 font-medium">Senha incorreta. Tente novamente.</p>}
+              </div>
+
+              <button
+                onClick={login}
+                className="w-full text-white font-bold py-4 rounded-xl text-sm tracking-widest uppercase transition-all flex items-center justify-center gap-2"
                 style={{
-                  background: "rgba(255,255,255,0.7)",
-                  border: erro ? "2px solid #ef4444" : "2px solid rgba(255,255,255,0.6)",
-                  backdropFilter: "blur(8px)",
+                  background: "linear-gradient(135deg, #00B040 0%, #009935 60%, #007a2a 100%)",
+                  boxShadow: "0 4px 24px rgba(0,176,64,0.3)",
                 }}
-                onFocus={e => { e.currentTarget.style.border = "2px solid #00B040"; e.currentTarget.style.background = "rgba(255,255,255,0.9)"; }}
-                onBlur={e => { e.currentTarget.style.border = erro ? "2px solid #ef4444" : "2px solid rgba(255,255,255,0.6)"; e.currentTarget.style.background = "rgba(255,255,255,0.7)"; }}
-              />
-              {erro && <p className="text-red-500 text-xs mt-1.5">Senha incorreta. Tente novamente.</p>}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >
+                ENTRAR NO SISTEMA →
+              </button>
             </div>
 
-            <button
-              onClick={login}
-              className="w-full text-white font-bold py-3.5 rounded-xl text-sm tracking-wide transition-colors shadow-lg"
-              style={{ background: "#00B040", boxShadow: "0 4px 16px rgba(0,176,64,0.35)" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#009935"}
-              onMouseLeave={e => e.currentTarget.style.background = "#00B040"}
-            >
-              ENTRAR
-            </button>
-          </div>
+            {/* SSL badge */}
+            <div className="mt-6 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 border border-gray-100">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span className="text-xs text-gray-500 font-medium">Conexão segura · SSL/TLS</span>
+            </div>
 
-          {/* Rodapé */}
-          <p className="text-center text-xs mt-10 text-gray-900">
-            Feito pela{" "}
-            <span className="font-bold" style={{ color: "#7c3aed" }}><a href="https://audis.online" target="_blank" rel="noopener noreferrer">AUDIS</a></span>
-          </p>
+            <p className="text-center text-xs mt-8 text-gray-400">
+              Feito pela{" "}
+              <a href="https://audis.online" target="_blank" rel="noopener noreferrer" className="font-bold" style={{ color: "#7c3aed" }}>
+                AUDIS
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     );
