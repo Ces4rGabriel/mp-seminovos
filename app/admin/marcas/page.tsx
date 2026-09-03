@@ -156,7 +156,7 @@ export default function AdminMarcas() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {marcas.map((m) => (
-            <div key={m.id} className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center gap-3 group relative shadow-sm hover:border-gray-300 transition-colors">
+            <div key={m.id} className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center gap-3 relative shadow-sm hover:border-gray-300 transition-colors">
               <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
                 {m.logo_url ? (
                   <Image src={m.logo_url} alt={m.nome} width={56} height={56} className="object-contain w-full h-full p-1" />
@@ -167,7 +167,7 @@ export default function AdminMarcas() {
               <p className="text-[10px] font-bold uppercase tracking-wider text-gray-700 text-center">{m.nome}</p>
               <button
                 onClick={() => excluir(m.id, m.nome)}
-                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 hover:text-red-500 cursor-pointer"
+                className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
               >
                 <Trash2 size={14} />
               </button>
