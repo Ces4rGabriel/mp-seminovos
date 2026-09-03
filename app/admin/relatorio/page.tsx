@@ -12,7 +12,7 @@ function mesLabel(date: Date) {
   return date.toLocaleString("pt-BR", { month: "short" }).replace(".", "").toUpperCase();
 }
 
-type MesData = { label: string; count: number; receita: number };
+type MesData = { label: string; count: number; receita: number; year: number; month: number };
 
 export default function Relatorio() {
   const [vendidos, setVendidos] = useState<Veiculo[]>([]);
@@ -35,13 +35,13 @@ export default function Relatorio() {
   const hoje = new Date();
   const meses: MesData[] = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(hoje.getFullYear(), hoje.getMonth() - (5 - i), 1);
-    return { label: mesLabel(d), count: 0, receita: 0, _year: d.getFullYear(), _month: d.getMonth() } as MesData & { _year: number; _month: number };
-  }) as (MesData & { _year: number; _month: number })[];
+    return { label: mesLabel(d), count: 0, receita: 0, year: d.getFullYear(), month: d.getMonth() };
+  });
 
   vendidos.forEach((v) => {
     if (!v.vendido_em) return;
     const d = new Date(v.vendido_em);
-    const m = meses.find((x) => x._year === d.getFullYear() && x._month === d.getMonth());
+    const m = meses.find((x) => x.year === d.getFullYear() && x.month === d.getMonth());
     if (m) { m.count += 1; m.receita += v.preco; }
   });
 
