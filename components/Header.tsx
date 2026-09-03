@@ -20,7 +20,7 @@ export default function Header({ whatsappUrl = "{whatsappUrl}" }: { whatsappUrl?
             className="h-11 w-11 object-cover rounded-xl"
             priority
           />
-          <span className="text-[17px] font-black text-gray-900 tracking-tight">MP Seminovos</span>
+          <span className="text-[18px] font-semibold text-gray-900" style={{ fontFamily: "var(--font-outfit)" }}>MP Seminovos</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
