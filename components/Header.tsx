@@ -20,10 +20,7 @@ export default function Header({ whatsappUrl = "{whatsappUrl}" }: { whatsappUrl?
             className="h-11 w-11 object-cover rounded-xl"
             priority
           />
-          <div className="leading-tight">
-            <p className="text-[15px] font-black text-gray-900 tracking-tight uppercase">MP Seminovos</p>
-            <p className="text-[10px] font-medium tracking-widest uppercase" style={{ color: "#00B040" }}>Veículos</p>
-          </div>
+          <span className="text-[17px] font-black text-gray-900 tracking-tight">MP Seminovos</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
