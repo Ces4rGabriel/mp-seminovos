@@ -14,13 +14,13 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
 
   const [offset, setOffset] = useState(0);
   const [dragDelta, setDragDelta] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(5); // mobile-first: 5 visíveis
+  const [visibleCount, setVisibleCount] = useState(4); // mobile-first: 4 visíveis
   const startX = useRef<number | null>(null);
   const dragging = useRef(false);
 
   useEffect(() => {
     const update = () => {
-      const n = window.innerWidth < 640 ? 5 : marcas.length;
+      const n = window.innerWidth < 640 ? 4 : marcas.length;
       setVisibleCount(Math.min(n, marcas.length));
     };
     update();
@@ -30,7 +30,10 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
 
   if (marcas.length === 0) return null;
 
-  const displayed = Array.from({ length: visibleCount }, (_, i) => marcas[(i + offset) % marcas.length]);
+  // Mostra visibleCount + 1 item (o extra cria o efeito de peek)
+  const peekCount = visibleCount < marcas.length ? visibleCount + 1 : visibleCount;
+  const displayed = Array.from({ length: peekCount }, (_, i) => marcas[(i + offset) % marcas.length]);
+  // Largura por item: divida pelos visíveis reais (o extra fica parcialmente cortado)
   const itemPct = `${100 / visibleCount}%`;
 
   function selecionar(nome: string) {
@@ -62,7 +65,15 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
     setTimeout(() => { dragging.current = false; }, 60);
   }
 
+  const showFade = visibleCount < marcas.length;
+
   return (
+    <div className="relative w-full">
+      {/* Gradiente direita — indica que tem mais marcas */}
+      {showFade && (
+        <div className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none sm:hidden"
+          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.95))" }} />
+      )}
     <div
       className="w-full select-none overflow-hidden"
       style={{ cursor: dragging.current ? "grabbing" : "grab" }}
@@ -115,6 +126,7 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
           );
         })}
       </div>
+    </div>
     </div>
   );
 }
