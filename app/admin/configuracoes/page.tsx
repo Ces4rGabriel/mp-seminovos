@@ -103,24 +103,24 @@ export default function AdminConfiguracoes() {
     <div className="p-6 max-w-2xl mx-auto">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 gap-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">Admin · Loja</p>
+      <div className="mb-6">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">Admin · Loja</p>
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none uppercase tracking-wide">
             Configurações
           </h1>
+          <button
+            onClick={salvar}
+            disabled={salvando}
+            className="flex items-center gap-2 text-white text-[11px] font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 transition-colors shrink-0"
+            style={{ background: salvo ? "#003314" : "#00B040" }}
+            onMouseEnter={e => { if (!salvando && !salvo) e.currentTarget.style.background = "#009935"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = salvo ? "#003314" : "#00B040"; }}
+          >
+            <Save size={14} strokeWidth={2.5} />
+            {salvando ? "Salvando..." : salvo ? "Salvo!" : "Salvar"}
+          </button>
         </div>
-        <button
-          onClick={salvar}
-          disabled={salvando}
-          className="flex items-center gap-2 text-white text-[11px] font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 transition-colors shrink-0"
-          style={{ background: salvo ? "#003314" : "#00B040" }}
-          onMouseEnter={e => { if (!salvando && !salvo) e.currentTarget.style.background = "#009935"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = salvo ? "#003314" : "#00B040"; }}
-        >
-          <Save size={14} strokeWidth={2.5} />
-          {salvando ? "Salvando..." : salvo ? "Salvo!" : "Salvar"}
-        </button>
       </div>
 
       <div className="space-y-4">
