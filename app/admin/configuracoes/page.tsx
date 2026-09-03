@@ -58,7 +58,7 @@ export default function AdminConfiguracoes() {
 
   async function carregar() {
     setCarregando(true);
-    const { data } = await supabase.from("configuracoes").select("*").limit(1).single();
+    const { data } = await supabase.from("configuracoes").select("*").limit(1).maybeSingle();
     if (data) setConfig(data);
     setCarregando(false);
   }

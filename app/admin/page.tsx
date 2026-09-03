@@ -27,13 +27,15 @@ export default function AdminVeiculos() {
   }
 
   async function toggleVendido(v: Veiculo) {
-    await supabase.from("veiculos").update({ vendido: !v.vendido }).eq("id", v.id);
+    const { error } = await supabase.from("veiculos").update({ vendido: !v.vendido }).eq("id", v.id);
+    if (error) { alert("Erro: " + error.message); return; }
     carregarVeiculos();
   }
 
   async function excluir(id: string) {
     if (!window.confirm("Excluir este veículo?")) return;
-    await supabase.from("veiculos").delete().eq("id", id);
+    const { error } = await supabase.from("veiculos").delete().eq("id", id);
+    if (error) { alert("Erro ao excluir: " + error.message); return; }
     carregarVeiculos();
   }
 

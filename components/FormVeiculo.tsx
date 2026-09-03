@@ -97,14 +97,26 @@ export default function FormVeiculo({ veiculo, onFechar, onSalvo }: Props) {
       return;
     }
     setSalvando(true);
-    const payload = { ...dados, descricao: dados.descricao || null };
-    if (veiculo) {
-      await supabase.from("veiculos").update(payload).eq("id", veiculo.id);
-    } else {
-      await supabase.from("veiculos").insert(payload);
+
+    // Nunca mandar id/created_at no payload — causa falha silenciosa no Supabase
+    const { id: _id, created_at: _ca, ...rest } = dados as Veiculo & { descricao: string };
+    const payload = { ...rest, descricao: dados.descricao || null };
+
+    try {
+      if (veiculo) {
+        const { error } = await supabase.from("veiculos").update(payload).eq("id", veiculo.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("veiculos").insert(payload);
+        if (error) throw error;
+      }
+      onSalvo();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert("Erro ao salvar: " + msg);
+    } finally {
+      setSalvando(false);
     }
-    setSalvando(false);
-    onSalvo();
   }
 
   const inp = "w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-green-500 focus:bg-white transition-all placeholder-gray-400";
