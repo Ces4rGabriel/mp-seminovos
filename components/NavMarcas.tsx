@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 type Marca = { id: string; nome: string; logo_url: string | null };
@@ -13,7 +13,8 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
   const searchParams = useSearchParams();
   const marcaAtiva = searchParams.get("marca") ?? "";
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [podeRolar, setPodeRolar] = useState(false);
+  const [podeRolarDir, setPodeRolarDir] = useState(false);
+  const [podeRolarEsq, setPodeRolarEsq] = useState(false);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -21,7 +22,8 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
 
     function check() {
       if (!el) return;
-      setPodeRolar(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+      setPodeRolarDir(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+      setPodeRolarEsq(el.scrollLeft > 4);
     }
     check();
     el.addEventListener("scroll", check, { passive: true });
@@ -44,11 +46,30 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
   function rolarDireita() {
     scrollRef.current?.scrollBy({ left: 160, behavior: "smooth" });
   }
+  function rolarEsquerda() {
+    scrollRef.current?.scrollBy({ left: -160, behavior: "smooth" });
+  }
 
   return (
     <div className="relative w-full">
+      {/* Fade + seta esquerda */}
+      {podeRolarEsq && (
+        <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center pointer-events-none sm:hidden">
+          <div
+            className="absolute left-0 top-0 bottom-0 w-16"
+            style={{ background: "linear-gradient(to left, transparent, rgba(255,255,255,0.97))" }}
+          />
+          <button
+            onClick={rolarEsquerda}
+            className="relative z-10 pointer-events-auto ml-1 w-7 h-7 rounded-full bg-white shadow-md border border-gray-100 flex items-center justify-center"
+          >
+            <ChevronLeft size={14} className="text-gray-500" />
+          </button>
+        </div>
+      )}
+
       {/* Fade + seta direita */}
-      {podeRolar && (
+      {podeRolarDir && (
         <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center pointer-events-none sm:hidden">
           <div
             className="absolute right-0 top-0 bottom-0 w-16"
