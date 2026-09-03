@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Save, Store, Phone, MapPin, Clock, Instagram, Facebook } from "lucide-react";
+import { Pencil, Check, X, Store, Phone, MapPin, Clock, Instagram, Facebook } from "lucide-react";
 
 type Config = {
   id?: string;
@@ -23,36 +23,29 @@ const vazio: Config = {
   facebook: "",
 };
 
-function Section({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#003314" }}>
-          <Icon size={15} className="text-white" />
-        </div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{title}</p>
-      </div>
-      <div className="space-y-4">{children}</div>
-    </div>
-  );
-}
+type CampoKey = keyof Omit<Config, "id">;
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 block mb-1.5">{label}</label>
-      {children}
-    </div>
-  );
-}
-
-const inp = "w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-green-500 focus:bg-white transition-all placeholder-gray-400";
+const campos: {
+  key: CampoKey;
+  label: string;
+  placeholder: string;
+  icon: React.ElementType;
+  prefix?: string;
+}[] = [
+  { key: "nome_loja",  label: "Nome da loja",                     placeholder: "MP Seminovos",                    icon: Store },
+  { key: "whatsapp",   label: "WhatsApp (DDI+DDD+número)",         placeholder: "5531999999999",                   icon: Phone, prefix: "+" },
+  { key: "endereco",   label: "Endereço",                          placeholder: "Rua Exemplo, 123 — Bairro, Cidade - UF", icon: MapPin },
+  { key: "horario",    label: "Horário de atendimento",            placeholder: "Seg a Sex: 8h–18h · Sáb: 8h–13h", icon: Clock },
+  { key: "instagram",  label: "Instagram (@ ou URL)",              placeholder: "@mpseminovos",                    icon: Instagram },
+  { key: "facebook",   label: "Facebook (@ ou URL)",               placeholder: "facebook.com/mpseminovos",        icon: Facebook },
+];
 
 export default function AdminConfiguracoes() {
-  const [config, setConfig] = useState<Config>(vazio);
+  const [config, setConfig]       = useState<Config>(vazio);
   const [carregando, setCarregando] = useState(true);
-  const [salvando, setSalvando] = useState(false);
-  const [salvo, setSalvo] = useState(false);
+  const [editando, setEditando]   = useState<CampoKey | null>(null);
+  const [rascunho, setRascunho]   = useState("");
+  const [salvando, setSalvando]   = useState(false);
 
   useEffect(() => { carregar(); }, []);
 
@@ -63,32 +56,37 @@ export default function AdminConfiguracoes() {
     setCarregando(false);
   }
 
-  function set(chave: keyof Config, valor: string) {
-    setConfig((c) => ({ ...c, [chave]: valor }));
-    setSalvo(false);
+  function abrirEdicao(key: CampoKey) {
+    setEditando(key);
+    setRascunho(config[key]);
   }
 
-  async function salvar() {
+  function cancelar() {
+    setEditando(null);
+    setRascunho("");
+  }
+
+  async function salvarCampo() {
+    if (!editando) return;
     setSalvando(true);
-    const payload = {
-      nome_loja: config.nome_loja,
-      whatsapp: config.whatsapp,
-      endereco: config.endereco,
-      horario: config.horario,
-      instagram: config.instagram,
-      facebook: config.facebook,
-    };
+
+    const valor = editando === "whatsapp"
+      ? rascunho.replace(/\D/g, "")
+      : rascunho.trim();
+
+    const novoConfig = { ...config, [editando]: valor };
 
     if (config.id) {
-      await supabase.from("configuracoes").update(payload).eq("id", config.id);
+      await supabase.from("configuracoes").update({ [editando]: valor }).eq("id", config.id);
     } else {
+      const payload = { ...vazio, ...novoConfig };
       const { data } = await supabase.from("configuracoes").insert(payload).select().single();
-      if (data) setConfig(data);
+      if (data) { setConfig(data); setSalvando(false); setEditando(null); return; }
     }
 
+    setConfig(novoConfig);
     setSalvando(false);
-    setSalvo(true);
-    setTimeout(() => setSalvo(false), 3000);
+    setEditando(null);
   }
 
   if (carregando) {
@@ -105,114 +103,84 @@ export default function AdminConfiguracoes() {
       {/* Header */}
       <div className="mb-6">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">Admin · Loja</p>
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none uppercase tracking-wide">
-            Configurações
-          </h1>
-          <button
-            onClick={salvar}
-            disabled={salvando}
-            className="flex items-center gap-2 text-white text-[11px] font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 transition-colors shrink-0"
-            style={{ background: salvo ? "#003314" : "#00B040" }}
-            onMouseEnter={e => { if (!salvando && !salvo) e.currentTarget.style.background = "#009935"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = salvo ? "#003314" : "#00B040"; }}
-          >
-            <Save size={14} strokeWidth={2.5} />
-            {salvando ? "Salvando..." : salvo ? "Salvo!" : "Salvar"}
-          </button>
-        </div>
+        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none uppercase tracking-wide">
+          Configurações
+        </h1>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
+        {campos.map(({ key, label, placeholder, icon: Icon, prefix }) => {
+          const valor = config[key];
+          const emEdicao = editando === key;
 
-        {/* Loja */}
-        <Section icon={Store} title="Dados da loja">
-          <Field label="Nome da loja">
-            <input
-              type="text"
-              value={config.nome_loja}
-              onChange={e => set("nome_loja", e.target.value)}
-              className={inp}
-              placeholder="MP Seminovos"
-            />
-          </Field>
-          <Field label="Endereço">
-            <input
-              type="text"
-              value={config.endereco}
-              onChange={e => set("endereco", e.target.value)}
-              className={inp}
-              placeholder="Rua Exemplo, 123 — Bairro, Cidade - UF"
-            />
-          </Field>
-          <Field label="Horário de atendimento">
-            <input
-              type="text"
-              value={config.horario}
-              onChange={e => set("horario", e.target.value)}
-              className={inp}
-              placeholder="Seg a Sex: 8h–18h · Sáb: 8h–13h"
-            />
-          </Field>
-        </Section>
+          return (
+            <div key={key} className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#003314" }}>
+                  <Icon size={13} className="text-white" />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{label}</p>
+              </div>
 
-        {/* Contato */}
-        <Section icon={Phone} title="Contato">
-          <Field label="WhatsApp (com DDI e DDD, só números)">
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">+</span>
-              <input
-                type="text"
-                value={config.whatsapp}
-                onChange={e => set("whatsapp", e.target.value.replace(/\D/g, ""))}
-                className={inp + " pl-7"}
-                placeholder="5511999999999"
-                maxLength={15}
-              />
+              {emEdicao ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="relative flex-1">
+                    {prefix && (
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">{prefix}</span>
+                    )}
+                    <input
+                      autoFocus
+                      type="text"
+                      value={rascunho}
+                      onChange={e => setRascunho(
+                        key === "whatsapp" ? e.target.value.replace(/\D/g, "") : e.target.value
+                      )}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") salvarCampo();
+                        if (e.key === "Escape") cancelar();
+                      }}
+                      placeholder={placeholder}
+                      maxLength={key === "whatsapp" ? 15 : undefined}
+                      className={`w-full bg-gray-50 border border-green-400 text-gray-900 rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 ${prefix ? "pl-7 pr-3" : "px-3"}`}
+                    />
+                  </div>
+                  <button
+                    onClick={salvarCampo}
+                    disabled={salvando}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 disabled:opacity-50 cursor-pointer"
+                    style={{ background: "#00B040" }}
+                  >
+                    <Check size={14} strokeWidth={2.5} />
+                  </button>
+                  <button
+                    onClick={cancelar}
+                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-600 shrink-0 cursor-pointer"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-3 mt-1">
+                  <p className={`text-sm flex-1 truncate ${valor ? "text-gray-800 font-medium" : "text-gray-400 italic"}`}>
+                    {key === "whatsapp" && valor ? `+${valor}` : (valor || placeholder)}
+                  </p>
+                  <button
+                    onClick={() => abrirEdicao(key)}
+                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-300 shrink-0 cursor-pointer transition-colors"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                </div>
+              )}
             </div>
-            {config.whatsapp && (
-              <p className="text-[10px] text-gray-400 mt-1.5">
-                Link gerado: wa.me/{config.whatsapp}
-              </p>
-            )}
-          </Field>
-        </Section>
-
-        {/* Redes sociais */}
-        <Section icon={Instagram} title="Redes sociais">
-          <Field label="Instagram (@ ou URL completa)">
-            <div className="relative">
-              <Instagram size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={config.instagram}
-                onChange={e => set("instagram", e.target.value)}
-                className={inp + " pl-9"}
-                placeholder="@mpseminovos"
-              />
-            </div>
-          </Field>
-          <Field label="Facebook (@ ou URL completa)">
-            <div className="relative">
-              <Facebook size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={config.facebook}
-                onChange={e => set("facebook", e.target.value)}
-                className={inp + " pl-9"}
-                placeholder="facebook.com/mpseminovos"
-              />
-            </div>
-          </Field>
-        </Section>
-
+          );
+        })}
       </div>
 
-      {/* Aviso sobre atualização do site */}
       <div className="mt-4 flex items-start gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50">
         <MapPin size={14} className="text-gray-400 mt-0.5 shrink-0" />
         <p className="text-[10px] text-gray-400 leading-relaxed">
-          As configurações salvas aqui são lidas pelo site automaticamente. Após salvar, o site exibirá os dados atualizados em alguns segundos.
+          Clique no lápis para editar cada campo. As alterações são salvas individualmente e aplicadas ao site em instantes.
         </p>
       </div>
 
