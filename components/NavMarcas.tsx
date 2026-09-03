@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 type Marca = { id: string; nome: string; logo_url: string | null };
@@ -11,100 +12,84 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const marcaAtiva = searchParams.get("marca") ?? "";
-
-  const [offset, setOffset] = useState(0);
-  const [dragDelta, setDragDelta] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(4); // mobile-first: 4 visíveis
-  const startX = useRef<number | null>(null);
-  const dragging = useRef(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [podeRolar, setPodeRolar] = useState(false);
 
   useEffect(() => {
-    const update = () => {
-      const n = window.innerWidth < 640 ? 4 : marcas.length;
-      setVisibleCount(Math.min(n, marcas.length));
+    const el = scrollRef.current;
+    if (!el) return;
+
+    function check() {
+      if (!el) return;
+      setPodeRolar(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    }
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      el.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
     };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [marcas.length]);
+  }, [marcas]);
 
   if (marcas.length === 0) return null;
 
-  // Mostra visibleCount + 1 item (o extra cria o efeito de peek)
-  const peekCount = visibleCount < marcas.length ? visibleCount + 1 : visibleCount;
-  const displayed = Array.from({ length: peekCount }, (_, i) => marcas[(i + offset) % marcas.length]);
-  // Largura por item: divida pelos visíveis reais (o extra fica parcialmente cortado)
-  const itemPct = visibleCount < marcas.length
-    ? `${100 / (visibleCount + 0.5)}%`
-    : `${100 / visibleCount}%`;
-
   function selecionar(nome: string) {
-    if (dragging.current) return;
     const params = new URLSearchParams(searchParams.toString());
     if (marcaAtiva === nome) params.delete("marca");
     else params.set("marca", nome);
     router.push(`/?${params.toString()}#estoque`);
   }
 
-  function onDown(clientX: number) {
-    startX.current = clientX;
-    dragging.current = false;
+  function rolarDireita() {
+    scrollRef.current?.scrollBy({ left: 160, behavior: "smooth" });
   }
-  function onMove(clientX: number) {
-    if (startX.current === null) return;
-    const dx = clientX - startX.current;
-    if (Math.abs(dx) > 8) dragging.current = true;
-    setDragDelta(dx);
-  }
-  function onUp(clientX: number) {
-    if (startX.current === null) return;
-    const dx = clientX - startX.current;
-    const THRESHOLD = 55;
-    if (dx < -THRESHOLD) setOffset((o) => (o + 1) % marcas.length);
-    else if (dx > THRESHOLD) setOffset((o) => (o - 1 + marcas.length) % marcas.length);
-    startX.current = null;
-    setDragDelta(0);
-    setTimeout(() => { dragging.current = false; }, 60);
-  }
-
-  const showFade = visibleCount < marcas.length;
 
   return (
     <div className="relative w-full">
-      {/* Gradiente direita — indica que tem mais marcas */}
-      {showFade && (
-        <div className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none sm:hidden"
-          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.95))" }} />
+      {/* Fade + seta direita */}
+      {podeRolar && (
+        <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center pointer-events-none sm:hidden">
+          <div
+            className="absolute right-0 top-0 bottom-0 w-16"
+            style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.97))" }}
+          />
+          <button
+            onClick={rolarDireita}
+            className="relative z-10 pointer-events-auto mr-1 w-7 h-7 rounded-full bg-white shadow-md border border-gray-100 flex items-center justify-center"
+          >
+            <ChevronRight size={14} className="text-gray-500" />
+          </button>
+        </div>
       )}
-    <div
-      className="w-full select-none overflow-hidden"
-      style={{ cursor: dragging.current ? "grabbing" : "grab" }}
-      onMouseDown={(e) => onDown(e.clientX)}
-      onMouseMove={(e) => { if (startX.current !== null) onMove(e.clientX); }}
-      onMouseUp={(e) => onUp(e.clientX)}
-      onMouseLeave={() => { setDragDelta(0); startX.current = null; }}
-      onTouchStart={(e) => onDown(e.touches[0].clientX)}
-      onTouchMove={(e) => onMove(e.touches[0].clientX)}
-      onTouchEnd={(e) => onUp(e.changedTouches[0].clientX)}
-    >
+
+      {/* Scroll nativo */}
       <div
-        className="flex"
+        ref={scrollRef}
+        className="flex overflow-x-auto gap-0 pb-1"
         style={{
-          transform: `translateX(${dragDelta * 0.25}px)`,
-          transition: dragDelta === 0 ? "transform 0.3s ease" : "none",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
-        {displayed.map(({ id, nome, logo_url }) => {
+        <style>{`.navmarcas-scroll::-webkit-scrollbar { display: none; }`}</style>
+        {marcas.map(({ id, nome, logo_url }) => {
           const ativo = marcaAtiva === nome;
           return (
-            <div
-              key={id + offset}
+            <button
+              key={id}
               onClick={() => selecionar(nome)}
-              className="flex flex-col items-center gap-1.5 group"
-              style={{ width: itemPct, flexShrink: 0 }}
+              className="flex flex-col items-center gap-1.5 group shrink-0 focus:outline-none"
+              style={{
+                width: "22.5%",
+                minWidth: 72,
+                scrollSnapAlign: "start",
+              }}
             >
               <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center overflow-hidden transition-all ring-2 ${
+                className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden transition-all ring-2 ${
                   ativo
                     ? "ring-green-600 shadow-md"
                     : "ring-gray-200 bg-gray-50 group-hover:ring-green-400 group-hover:shadow-sm"
@@ -112,23 +97,28 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
                 style={ativo ? { background: "#e8f5e9" } : {}}
               >
                 {logo_url ? (
-                  <Image src={logo_url} alt={nome} width={52} height={52} className="object-contain w-11 h-11 pointer-events-none" />
+                  <Image
+                    src={logo_url}
+                    alt={nome}
+                    width={44}
+                    height={44}
+                    className="object-contain w-10 h-10 pointer-events-none"
+                  />
                 ) : (
-                  <span className="text-2xl pointer-events-none">🚗</span>
+                  <span className="text-xl pointer-events-none">🚗</span>
                 )}
               </div>
               <span
-                className={`text-[10px] font-semibold text-center leading-tight pointer-events-none w-full truncate px-1 ${
+                className={`text-[10px] font-semibold text-center leading-tight w-full truncate px-1 ${
                   ativo ? "text-green-700" : "text-gray-500 group-hover:text-green-600"
                 }`}
               >
                 {nome}
               </span>
-            </div>
+            </button>
           );
         })}
       </div>
-    </div>
     </div>
   );
 }
