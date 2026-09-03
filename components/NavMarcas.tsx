@@ -14,7 +14,7 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
 
   const [offset, setOffset] = useState(0);
   const [dragDelta, setDragDelta] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(marcas.length);
+  const [visibleCount, setVisibleCount] = useState(5); // mobile-first: 5 visíveis
   const startX = useRef<number | null>(null);
   const dragging = useRef(false);
 
@@ -105,7 +105,7 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
                 )}
               </div>
               <span
-                className={`text-[10px] font-semibold text-center leading-tight pointer-events-none ${
+                className={`text-[10px] font-semibold text-center leading-tight pointer-events-none w-full truncate px-1 ${
                   ativo ? "text-green-700" : "text-gray-500 group-hover:text-green-600"
                 }`}
               >
