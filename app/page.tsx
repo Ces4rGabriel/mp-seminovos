@@ -21,6 +21,7 @@ export default async function Home({
     .from("veiculos")
     .select("*")
     .eq("vendido", false)
+    .eq("oculto", false)
     .order("destaque", { ascending: false })
     .order("created_at", { ascending: false });
 

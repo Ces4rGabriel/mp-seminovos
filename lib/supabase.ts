@@ -16,6 +16,7 @@ export type Veiculo = {
   fotos: string[];
   tipo: "Seminovo" | "Zero km";
   destaque: boolean;
+  oculto: boolean;
   vendido: boolean;
   vendido_em: string | null;
   created_at: string;

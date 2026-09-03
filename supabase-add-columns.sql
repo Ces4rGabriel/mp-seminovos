@@ -4,6 +4,7 @@
 ALTER TABLE veiculos ADD COLUMN IF NOT EXISTS fipe_preco numeric;
 ALTER TABLE veiculos ADD COLUMN IF NOT EXISTS tipo text NOT NULL DEFAULT 'Seminovo';
 ALTER TABLE veiculos ADD COLUMN IF NOT EXISTS vendido_em timestamptz;
+ALTER TABLE veiculos ADD COLUMN IF NOT EXISTS oculto boolean NOT NULL DEFAULT false;
 
 -- Garante que a tabela configuracoes existe
 CREATE TABLE IF NOT EXISTS configuracoes (

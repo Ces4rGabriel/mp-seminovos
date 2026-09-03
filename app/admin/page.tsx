@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase, type Veiculo } from "@/lib/supabase";
-import { Plus, Trash2, Edit3, Eye, EyeOff, Car } from "lucide-react";
+import { Plus, Trash2, Edit3, Eye, EyeOff, BadgeCheck, Car } from "lucide-react";
 import FormVeiculo from "@/components/FormVeiculo";
 import Image from "next/image";
 
@@ -24,6 +24,12 @@ export default function AdminVeiculos() {
     const { data } = await supabase.from("veiculos").select("*").order("created_at", { ascending: false });
     setVeiculos(data ?? []);
     setCarregando(false);
+  }
+
+  async function toggleOculto(v: Veiculo) {
+    const { error } = await supabase.from("veiculos").update({ oculto: !v.oculto }).eq("id", v.id);
+    if (error) { alert("Erro: " + error.message); return; }
+    carregarVeiculos();
   }
 
   async function toggleVendido(v: Veiculo) {
@@ -147,8 +153,11 @@ export default function AdminVeiculos() {
                       Destaque
                     </span>
                   )}
+                  {v.oculto && !v.vendido && (
+                    <span className="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-semibold">Oculto</span>
+                  )}
                   {v.vendido && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Vendido</span>
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold">Vendido</span>
                   )}
                 </div>
                 <p className="text-gray-400 text-xs mt-0.5">
@@ -159,11 +168,20 @@ export default function AdminVeiculos() {
               {/* Ações */}
               <div className="flex items-center gap-1 shrink-0">
                 <button
-                  onClick={() => toggleVendido(v)}
-                  title={v.vendido ? "Marcar disponível" : "Marcar vendido"}
-                  className="p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+                  onClick={() => toggleOculto(v)}
+                  title={v.oculto ? "Mostrar no site" : "Ocultar do site"}
+                  className="p-2 transition-colors cursor-pointer"
+                  style={{ color: v.oculto ? "#f59e0b" : "#9ca3af" }}
                 >
-                  {v.vendido ? <Eye size={16} /> : <EyeOff size={16} />}
+                  {v.oculto ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+                <button
+                  onClick={() => toggleVendido(v)}
+                  title={v.vendido ? "Desmarcar vendido" : "Marcar como vendido"}
+                  className="p-2 transition-colors cursor-pointer"
+                  style={{ color: v.vendido ? "#00B040" : "#9ca3af" }}
+                >
+                  <BadgeCheck size={16} />
                 </button>
                 <button
                   onClick={() => { setEditando(v); setFormAberto(true); }}
