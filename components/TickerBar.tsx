@@ -24,7 +24,7 @@ export default function TickerBar() {
         .ticker-track {
           display: flex;
           width: max-content;
-          animation: ticker 30s linear infinite;
+          animation: ticker 45s linear infinite;
         }
         .ticker-track:hover {
           animation-play-state: paused;
@@ -37,7 +37,7 @@ export default function TickerBar() {
             <span className="text-white/90 text-[11px] font-semibold uppercase tracking-widest whitespace-nowrap px-6">
               {frase}
             </span>
-            <span className="text-green-500 text-[10px]">✦</span>
+            <span className="text-green-500 text-[8px]">●</span>
           </span>
         ))}
       </div>
