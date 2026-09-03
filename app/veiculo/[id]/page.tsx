@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
 import { supabase, type Veiculo } from "@/lib/supabase";
-import Header from "@/components/Header";
+import HeaderComConfig from "@/components/HeaderComConfig";
 import FooterSite from "@/components/FooterSite";
 import VeiculoGaleria from "@/components/VeiculoGaleria";
 import BotaoCompartilhar from "@/components/BotaoCompartilhar";
@@ -127,7 +127,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Header />
+      <HeaderComConfig />
 
       <div className="max-w-7xl mx-auto px-4 py-3">
         <Link href="/#estoque" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors">

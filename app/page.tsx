@@ -1,6 +1,6 @@
 import { supabase, type Veiculo } from "@/lib/supabase";
 import CardVeiculo from "@/components/CardVeiculo";
-import Header from "@/components/Header";
+import HeaderComConfig from "@/components/HeaderComConfig";
 import Hero from "@/components/Hero";
 import NavMarcas from "@/components/NavMarcas";
 import FooterSite from "@/components/FooterSite";
@@ -36,7 +36,7 @@ export default async function Home({
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Header />
+      <HeaderComConfig />
       <Hero marcas={(marcas ?? []).map((m) => m.nome)} />
       <TickerBar />
 
