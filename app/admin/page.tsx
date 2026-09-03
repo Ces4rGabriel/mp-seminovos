@@ -27,7 +27,11 @@ export default function AdminVeiculos() {
   }
 
   async function toggleVendido(v: Veiculo) {
-    const { error } = await supabase.from("veiculos").update({ vendido: !v.vendido }).eq("id", v.id);
+    const agora = new Date().toISOString();
+    const patch = v.vendido
+      ? { vendido: false, vendido_em: null }
+      : { vendido: true, vendido_em: agora };
+    const { error } = await supabase.from("veiculos").update(patch).eq("id", v.id);
     if (error) { alert("Erro: " + error.message); return; }
     carregarVeiculos();
   }

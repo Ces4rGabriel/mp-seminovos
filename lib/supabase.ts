@@ -17,6 +17,7 @@ export type Veiculo = {
   tipo: "Seminovo" | "Zero km";
   destaque: boolean;
   vendido: boolean;
+  vendido_em: string | null;
   created_at: string;
 };
 

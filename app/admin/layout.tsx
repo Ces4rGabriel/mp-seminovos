@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Car, Tag, Settings, LogOut, Menu, X, Sun, Moon } from "lucide-react";
+import { Car, Tag, Settings, LogOut, Menu, X, Sun, Moon, BarChart2 } from "lucide-react";
 
 const SENHA = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "mp2025";
 
 const nav = [
   { href: "/admin", label: "Veículos", icon: Car },
   { href: "/admin/marcas", label: "Marcas", icon: Tag },
+  { href: "/admin/relatorio", label: "Relatório", icon: BarChart2 },
   { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ];
 
