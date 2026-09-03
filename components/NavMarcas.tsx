@@ -84,10 +84,10 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
         </div>
       )}
 
-      {/* Scroll nativo */}
+      {/* Scroll nativo (mobile) / wrap (desktop) */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto gap-0 py-2"
+        className="flex overflow-x-auto md:overflow-x-visible md:flex-wrap py-2"
         style={{
           scrollSnapType: "x mandatory",
           WebkitOverflowScrolling: "touch",
@@ -95,19 +95,14 @@ function NavContent({ marcas }: { marcas: Marca[] }) {
           msOverflowStyle: "none",
         }}
       >
-        <style>{`.navmarcas-scroll::-webkit-scrollbar { display: none; }`}</style>
         {marcas.map(({ id, nome, logo_url }) => {
           const ativo = marcaAtiva === nome;
           return (
             <button
               key={id}
               onClick={() => selecionar(nome)}
-              className="flex flex-col items-center gap-1.5 group shrink-0 focus:outline-none"
-              style={{
-                width: "22.5%",
-                minWidth: 72,
-                scrollSnapAlign: "start",
-              }}
+              className="flex flex-col items-center gap-1.5 group shrink-0 focus:outline-none w-[22.5%] min-w-[72px] md:w-auto md:min-w-0 md:px-3"
+              style={{ scrollSnapAlign: "start" }}
             >
               <div
                 className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden transition-all ring-2 ${
