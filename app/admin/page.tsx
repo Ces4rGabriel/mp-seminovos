@@ -129,71 +129,63 @@ export default function AdminVeiculos() {
           {filtrados.map((v) => (
             <div
               key={v.id}
-              className={`bg-white border rounded-xl flex items-center gap-4 p-4 transition-opacity ${
+              className={`bg-white border rounded-xl flex items-center gap-3 p-3 transition-opacity ${
                 v.vendido ? "border-gray-100 opacity-60" : "border-gray-200"
               }`}
             >
               {/* Miniatura */}
-              <div className="w-16 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+              <div className="w-14 h-11 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                 {v.fotos?.[0] ? (
-                  <Image src={v.fotos[0]} alt={v.modelo} width={64} height={48} className="object-cover w-full h-full" />
+                  <Image src={v.fotos[0]} alt={v.modelo} width={56} height={44} className="object-cover w-full h-full" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Car size={20} className="text-gray-300" />
+                    <Car size={16} className="text-gray-300" />
                   </div>
                 )}
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-bold text-gray-900 text-sm">{v.marca} {v.modelo} {v.ano}</p>
-                  {v.destaque && (
-                    <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#dcfce7", color: "#003314" }}>
-                      Destaque
-                    </span>
-                  )}
-                  {v.oculto && !v.vendido && (
-                    <span className="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-semibold">Oculto</span>
-                  )}
-                  {v.vendido && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold">Vendido</span>
-                  )}
+                <div className="flex items-center gap-1.5">
+                  <p className="font-bold text-gray-900 text-xs truncate">{v.marca} {v.modelo} {v.ano}</p>
+                  {v.destaque && <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "#dcfce7", color: "#003314" }}>★</span>}
+                  {v.oculto && !v.vendido && <span className="shrink-0 text-[9px] bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded-full font-bold">Oculto</span>}
+                  {v.vendido && <span className="shrink-0 text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-bold">Vendido</span>}
                 </div>
-                <p className="text-gray-400 text-xs mt-0.5">
+                <p className="text-gray-400 text-[11px] mt-0.5 truncate">
                   {formatPreco(v.preco)} · {v.km.toLocaleString("pt-BR")} km · {v.cor}
                 </p>
               </div>
 
               {/* Ações */}
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center shrink-0">
                 <button
                   onClick={() => toggleOculto(v)}
                   title={v.oculto ? "Mostrar no site" : "Ocultar do site"}
-                  className="p-2 transition-colors cursor-pointer"
+                  className="p-1.5 transition-colors cursor-pointer"
                   style={{ color: v.oculto ? "#f59e0b" : "#9ca3af" }}
                 >
-                  {v.oculto ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {v.oculto ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
                 <button
                   onClick={() => toggleVendido(v)}
                   title={v.vendido ? "Desmarcar vendido" : "Marcar como vendido"}
-                  className="p-2 transition-colors cursor-pointer"
+                  className="p-1.5 transition-colors cursor-pointer"
                   style={{ color: v.vendido ? "#00B040" : "#9ca3af" }}
                 >
-                  <BadgeCheck size={16} />
+                  <BadgeCheck size={14} />
                 </button>
                 <button
                   onClick={() => { setEditando(v); setFormAberto(true); }}
-                  className="p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
                 >
-                  <Edit3 size={16} />
+                  <Edit3 size={14} />
                 </button>
                 <button
                   onClick={() => excluir(v.id)}
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                  className="p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>

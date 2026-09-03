@@ -1,11 +1,13 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
+import { type Metadata } from "next";
 import { supabase, type Veiculo } from "@/lib/supabase";
 import Header from "@/components/Header";
 import FooterSite from "@/components/FooterSite";
 import VeiculoGaleria from "@/components/VeiculoGaleria";
-import Link from "next/link";
-import { ChevronLeft, CheckCircle2, Phone, CalendarDays, Gauge, Cog, Fuel, Palette, Calendar, Share2 } from "lucide-react";
+import BotaoCompartilhar from "@/components/BotaoCompartilhar";
 import BotaoFlutuante from "@/components/BotaoFlutuante";
+import Link from "next/link";
+import { ChevronLeft, CheckCircle2, Phone, CalendarDays, Gauge, Cog, Fuel, Palette, Calendar } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -18,21 +20,45 @@ function formatPreco(preco: number) {
   return preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 });
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const { data: veiculo } = await supabase.from("veiculos").select("*").eq("id", id).single<Veiculo>();
+
+  if (!veiculo) return { title: "Veículo não encontrado · MP Seminovos" };
+
+  const titulo = `${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}`;
+  const preco = formatPreco(veiculo.preco);
+  const km = formatKm(veiculo.km);
+  const descBase = veiculo.descricao ?? "Veículo seminovo revisado com garantia. Consulte condições de financiamento.";
+  const description = `${titulo}, ${km}, ${preco}. ${descBase}`.slice(0, 160);
+
+  return {
+    title: `${titulo} · MP Seminovos`,
+    description,
+    openGraph: {
+      title: `${titulo} · MP Seminovos`,
+      description: `${preco} · ${km} · Financiamento facilitado`,
+      images: veiculo.fotos?.[0] ? [{ url: veiculo.fotos[0], width: 1200, height: 630 }] : [],
+      type: "website",
+    },
+  };
+}
+
 export default async function VeiculoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const { data: veiculo } = await supabase
-    .from("veiculos")
-    .select("*")
-    .eq("id", id)
-    .single<Veiculo>();
+  const [{ data: veiculo }, { data: config }] = await Promise.all([
+    supabase.from("veiculos").select("*").eq("id", id).single<Veiculo>(),
+    supabase.from("configuracoes").select("whatsapp").limit(1).maybeSingle(),
+  ]);
 
   if (!veiculo) notFound();
 
+  const whatsappNumero = config?.whatsapp || "5531999561226";
   const whatsappMsg = encodeURIComponent(
     `Olá! Tenho interesse no ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano} anunciado no site da MP Seminovos.`
   );
-  const whatsappUrl = `https://wa.me/5531999561226?text=${whatsappMsg}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumero}?text=${whatsappMsg}`;
   const agendaMsg = `Olá! Gostaria de agendar uma visita para ver o ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}.`;
 
   const fotos = veiculo.fotos ?? [];
@@ -84,7 +110,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
             <Phone size={15} />
             Tenho interesse
           </a>
-          <a href={`https://wa.me/5531999561226?text=${encodeURIComponent(agendaMsg)}`} target="_blank" rel="noopener noreferrer"
+          <a href={`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(agendaMsg)}`} target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 font-semibold py-3.5 rounded-xl text-sm border-2 transition-colors"
             style={{ color: "#00B040", borderColor: "#00B040" }}>
             <CalendarDays size={15} />
@@ -120,10 +146,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
             {/* Preço aparece aqui no mobile, logo após a galeria */}
             <div className="lg:hidden flex flex-col gap-2">
               {cardPreco}
-              <button className="flex items-center justify-center gap-2 text-gray-400 text-xs font-medium py-2 hover:text-gray-600 transition-colors w-full">
-                <Share2 size={13} />
-                Compartilhar este anúncio
-              </button>
+              <BotaoCompartilhar />
             </div>
 
             {/* Cards de specs: 3 colunas no mobile, 5 no desktop */}
@@ -163,10 +186,7 @@ export default async function VeiculoPage({ params }: { params: Promise<{ id: st
           <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-20 flex flex-col gap-3">
               {cardPreco}
-              <button className="flex items-center justify-center gap-2 text-gray-400 text-xs font-medium py-2 hover:text-gray-600 transition-colors">
-                <Share2 size={13} />
-                Compartilhar este anúncio
-              </button>
+              <BotaoCompartilhar />
             </div>
           </div>
 

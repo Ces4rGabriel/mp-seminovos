@@ -1,13 +1,22 @@
-import { ShieldCheck, TrendingUp, CreditCard, MessageCircle, Phone } from "lucide-react";
+import { ShieldCheck, TrendingUp, CreditCard, MessageCircle, Phone, MapPin, Clock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const diferenciais = [
-  { icon: ShieldCheck,    label: "Veículos revisados",    desc: "Todos com inspeção completa" },
-  { icon: TrendingUp,     label: "Valorização do usado",  desc: "Melhor avaliação do mercado" },
-  { icon: CreditCard,     label: "Financiamento fácil",   desc: "Condições especiais para você" },
-  { icon: MessageCircle,  label: "Suporte via WhatsApp",  desc: "Atendimento personalizado" },
+  { icon: ShieldCheck,   label: "Veículos revisados",   desc: "Todos com inspeção completa" },
+  { icon: TrendingUp,    label: "Valorização do usado",  desc: "Melhor avaliação do mercado" },
+  { icon: CreditCard,    label: "Financiamento fácil",   desc: "Condições especiais para você" },
+  { icon: MessageCircle, label: "Suporte via WhatsApp",  desc: "Atendimento personalizado" },
 ];
 
-export default function FooterSite() {
+export default async function FooterSite() {
+  const { data: config } = await supabase.from("configuracoes").select("*").limit(1).maybeSingle();
+
+  const whatsapp = config?.whatsapp || "5531999561226";
+  const nomeLoja = config?.nome_loja || "MP Seminovos";
+  const endereco = config?.endereco || null;
+  const horario = config?.horario || null;
+  const primeiroNome = nomeLoja.split(" ")[0];
+
   return (
     <footer>
       {/* Diferenciais */}
@@ -36,21 +45,38 @@ export default function FooterSite() {
             Nossa equipe está pronta para te ajudar a encontrar o veículo certo.
           </p>
           <a
-            href="https://wa.me/5531999561226"
+            href={`https://wa.me/${whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-white font-semibold px-8 py-3 rounded-xl text-sm"
             style={{ background: "#00B040" }}
           >
             <Phone size={16} />
-            Falar com a equipe MP
+            Falar com a equipe {primeiroNome}
           </a>
+
+          {(endereco || horario) && (
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-5 text-gray-400 text-xs">
+              {endereco && (
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={12} className="shrink-0" />
+                  <span>{endereco}</span>
+                </div>
+              )}
+              {horario && (
+                <div className="flex items-center gap-1.5">
+                  <Clock size={12} className="shrink-0" />
+                  <span>{horario}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Copyright */}
       <div className="py-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-white">
-        © {new Date().getFullYear()} MP Seminovos · Todos os direitos reservados
+        © {new Date().getFullYear()} {nomeLoja} · Todos os direitos reservados
       </div>
     </footer>
   );
