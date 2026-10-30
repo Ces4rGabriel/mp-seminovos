@@ -1,234 +1,144 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase, type Veiculo } from "@/lib/supabase";
-import { Plus, Trash2, Edit3, Eye, EyeOff, BadgeCheck, Car, Search, X } from "lucide-react";
-import FormVeiculo from "@/components/FormVeiculo";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Car, Wallet, BarChart2, Tag } from "lucide-react";
 
-function formatPreco(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+type Dados = {
+  resumo: { saldo: number; resultadoMes: number; entradasMes: number; saidasMes: number };
+  estoque: { quantidade: number; capitalInvestido: number; lucroPrevisto: number; lucroRealizado: number };
+  lancamentos: { id: string; tipo: "entrada" | "saida"; valor: number | string; data: string; descricao: string }[];
+  veiculos: { vendido: boolean; valor_recebido: number }[];
+};
+
+function formatBRL(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-export default function AdminVeiculos() {
-  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-  const [formAberto, setFormAberto] = useState(false);
-  const [editando, setEditando] = useState<Veiculo | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [filtro, setFiltro] = useState<"todos" | "disponiveis" | "vendidos">("todos");
-  const [busca, setBusca] = useState("");
+function formatData(iso: string) {
+  const [a, m, d] = iso.split("-");
+  return `${d}/${m}/${a}`;
+}
 
-  useEffect(() => { carregarVeiculos(); }, []);
+const atalhos = [
+  { href: "/admin/financeiro", label: "Financeiro", icon: Wallet },
+  { href: "/admin/veiculos", label: "Veículos", icon: Car },
+  { href: "/admin/relatorio", label: "Relatório", icon: BarChart2 },
+  { href: "/admin/marcas", label: "Marcas", icon: Tag },
+];
 
-  async function carregarVeiculos() {
-    setCarregando(true);
-    const { data } = await supabase.from("veiculos").select("*").order("created_at", { ascending: false });
-    setVeiculos(data ?? []);
-    setCarregando(false);
-  }
+export default function AdminInicio() {
+  const [dados, setDados] = useState<Dados | null>(null);
+  const [erro, setErro] = useState("");
 
-  async function toggleOculto(v: Veiculo) {
-    const { error } = await supabase.from("veiculos").update({ oculto: !v.oculto }).eq("id", v.id);
-    if (error) { alert("Erro: " + error.message); return; }
-    carregarVeiculos();
-  }
+  useEffect(() => {
+    fetch("/api/financeiro", { headers: { "x-admin-senha": sessionStorage.getItem("mp_admin_senha") ?? "" } })
+      .then(r => r.json().then(j => ({ ok: r.ok, j })))
+      .then(({ ok, j }) => (ok ? setDados(j) : setErro(j.erro ?? "Erro ao carregar")))
+      .catch(() => setErro("Erro ao carregar"));
+  }, []);
 
-  async function toggleVendido(v: Veiculo) {
-    const agora = new Date().toISOString();
-    const patch = v.vendido
-      ? { vendido: false, vendido_em: null }
-      : { vendido: true, vendido_em: agora };
-    const { error } = await supabase.from("veiculos").update(patch).eq("id", v.id);
-    if (error) { alert("Erro: " + error.message); return; }
-    carregarVeiculos();
-  }
-
-  async function excluir(id: string) {
-    if (!window.confirm("Excluir este veículo?")) return;
-    const { error } = await supabase.from("veiculos").delete().eq("id", id);
-    if (error) { alert("Erro ao excluir: " + error.message); return; }
-    carregarVeiculos();
-  }
-
-  const termo = busca.toLowerCase().trim();
-  const filtrados = veiculos.filter(v => {
-    const passaFiltro = filtro === "todos" ? true : filtro === "vendidos" ? v.vendido : !v.vendido;
-    if (!passaFiltro) return false;
-    if (!termo) return true;
-    return (
-      v.marca.toLowerCase().includes(termo) ||
-      v.modelo.toLowerCase().includes(termo) ||
-      String(v.ano).includes(termo) ||
-      v.cor.toLowerCase().includes(termo)
-    );
-  });
-
-  const stats = {
-    total: veiculos.length,
-    disponiveis: veiculos.filter(v => !v.vendido).length,
-    vendidos: veiculos.filter(v => v.vendido).length,
-  };
+  const vendidos = dados?.veiculos.filter(v => v.vendido) ?? [];
+  const recebidoVendas = vendidos.reduce((s, v) => s + Number(v.valor_recebido), 0);
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">Estoque · Visão Geral</p>
-          <h1 className="text-3xl font-black text-gray-900 leading-none uppercase tracking-wide">Veículos</h1>
-        </div>
-        <button
-          onClick={() => { setEditando(null); setFormAberto(true); }}
-          className="flex items-center gap-2 text-white text-[11px] font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg cursor-pointer"
-          style={{ background: "#00B040" }}
-        >
-          <Plus size={14} strokeWidth={2.5} />
-          Novo Veículo
-        </button>
+      <div className="mb-6">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">Visão geral</p>
+        <h1 className="text-3xl font-black text-gray-900 leading-none uppercase tracking-wide">Dashboard</h1>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Total</p>
-          <p className="text-3xl font-black text-gray-900">{stats.total}</p>
-        </div>
-        <div className="rounded-xl p-4" style={{ background: "#003314" }}>
-          <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "#4ade80" }}>Disponíveis</p>
-          <p className="text-3xl font-black text-white">{stats.disponiveis}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Vendidos</p>
-          <p className="text-3xl font-black text-gray-400">{stats.vendidos}</p>
-        </div>
-      </div>
+      {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
+      {!dados && !erro && <div className="text-center py-20 text-gray-400">Carregando...</div>}
 
-      {/* Busca */}
-      <div className="relative mb-3">
-        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-        <input
-          type="text"
-          placeholder="Buscar por marca, modelo, ano ou cor..."
-          value={busca}
-          onChange={e => setBusca(e.target.value)}
-          className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-9 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 transition-all"
-        />
-        {busca && (
-          <button
-            onClick={() => setBusca("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
-          >
-            <X size={14} />
-          </button>
-        )}
-      </div>
+      {dados && (
+        <>
+          {/* Caixa */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div className="rounded-xl p-4" style={{ background: "#003314" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "#4ade80" }}>Saldo do caixa</p>
+              <p className="text-lg md:text-xl font-black whitespace-nowrap text-white">{formatBRL(dados.resumo.saldo)}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Entradas no mês</p>
+              <p className="text-lg md:text-xl font-black whitespace-nowrap text-gray-900">{formatBRL(dados.resumo.entradasMes)}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Saídas no mês</p>
+              <p className="text-lg md:text-xl font-black whitespace-nowrap text-gray-900">{formatBRL(dados.resumo.saidasMes)}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Resultado do mês</p>
+              <p className="text-lg md:text-xl font-black whitespace-nowrap" style={{ color: dados.resumo.resultadoMes >= 0 ? "#00B040" : "#ef4444" }}>
+                {formatBRL(dados.resumo.resultadoMes)}
+              </p>
+            </div>
+          </div>
 
-      {/* Filtros */}
-      <div className="flex gap-2 mb-5">
-        {(["todos", "disponiveis", "vendidos"] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFiltro(f)}
-            className={`text-[10px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-              filtro === f ? "text-white" : "text-gray-500 bg-white border border-gray-200 hover:border-gray-300 hover:text-gray-700"
-            }`}
-            style={filtro === f ? { background: "#003314" } : {}}
-          >
-            {f === "todos" ? "Todos" : f === "disponiveis" ? "Disponíveis" : "Vendidos"}
-          </button>
-        ))}
-      </div>
-
-      {/* Lista */}
-      {carregando ? (
-        <div className="text-center py-20 text-gray-400">Carregando...</div>
-      ) : filtrados.length === 0 ? (
-        <div className="text-center py-20">
-          <Car size={40} className="mx-auto mb-3 text-gray-300" />
-          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Nenhum veículo encontrado</p>
-          <button
-            onClick={() => { setEditando(null); setFormAberto(true); }}
-            className="mt-3 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
-            style={{ color: "#00B040" }}
-          >
-            Cadastrar agora →
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {filtrados.map((v) => (
-            <div
-              key={v.id}
-              className={`bg-white border rounded-xl flex items-center gap-3 p-3 transition-opacity ${
-                v.vendido ? "border-gray-100 opacity-60" : "border-gray-200"
-              }`}
-            >
-              {/* Miniatura */}
-              <div className="w-14 h-11 rounded-lg bg-gray-100 overflow-hidden shrink-0">
-                {v.fotos?.[0] ? (
-                  <Image src={v.fotos[0]} alt={v.modelo} width={56} height={44} className="object-cover w-full h-full" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Car size={16} className="text-gray-300" />
-                  </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <p className="font-bold text-gray-900 text-xs truncate">{v.marca} {v.modelo} {v.ano}</p>
-                  {v.destaque && <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "#dcfce7", color: "#003314" }}>★</span>}
-                  {v.oculto && !v.vendido && <span className="shrink-0 text-[9px] bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded-full font-bold">Oculto</span>}
-                  {v.vendido && <span className="shrink-0 text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-bold">Vendido</span>}
+          {/* Estoque e vendas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                Estoque · {dados.estoque.quantidade} veículos
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Capital investido</p>
+                  <p className="font-bold text-gray-900">{formatBRL(dados.estoque.capitalInvestido)}</p>
                 </div>
-                <p className="text-gray-400 text-[11px] mt-0.5 truncate">
-                  {formatPreco(v.preco)} · {v.km.toLocaleString("pt-BR")} km · {v.cor}
-                </p>
-              </div>
-
-              {/* Ações */}
-              <div className="flex items-center shrink-0">
-                <button
-                  onClick={() => toggleOculto(v)}
-                  title={v.oculto ? "Mostrar no site" : "Ocultar do site"}
-                  className="p-1.5 transition-colors cursor-pointer"
-                  style={{ color: v.oculto ? "#f59e0b" : "#9ca3af" }}
-                >
-                  {v.oculto ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-                <button
-                  onClick={() => toggleVendido(v)}
-                  title={v.vendido ? "Desmarcar vendido" : "Marcar como vendido"}
-                  className="p-1.5 transition-colors cursor-pointer"
-                  style={{ color: v.vendido ? "#00B040" : "#9ca3af" }}
-                >
-                  <BadgeCheck size={14} />
-                </button>
-                <button
-                  onClick={() => { setEditando(v); setFormAberto(true); }}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
-                >
-                  <Edit3 size={14} />
-                </button>
-                <button
-                  onClick={() => excluir(v.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-                >
-                  <Trash2 size={14} />
-                </button>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Lucro previsto</p>
+                  <p className="font-bold text-gray-900">{formatBRL(dados.estoque.lucroPrevisto)}</p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                Vendas · {vendidos.length} veículos vendidos
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Recebido nas vendas</p>
+                  <p className="font-bold text-gray-900">{formatBRL(recebidoVendas)}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Lucro realizado</p>
+                  <p className="font-bold text-gray-900">{formatBRL(dados.estoque.lucroRealizado)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {formAberto && (
-        <FormVeiculo
-          veiculo={editando}
-          onFechar={() => { setFormAberto(false); setEditando(null); }}
-          onSalvo={() => { setFormAberto(false); setEditando(null); carregarVeiculos(); }}
-        />
+          {/* Atalhos */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {atalhos.map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 hover:border-gray-300 transition-colors">
+                <Icon size={18} style={{ color: "#00B040" }} />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-700">{label}</span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Últimos lançamentos */}
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Últimos lançamentos</p>
+          {dados.lancamentos.length === 0 ? (
+            <div className="text-center py-10 text-gray-400 text-xs uppercase tracking-wider">Nenhum lançamento ainda</div>
+          ) : (
+            <div className="space-y-2">
+              {dados.lancamentos.slice(0, 5).map(l => (
+                <div key={l.id} className="bg-white border border-gray-200 rounded-xl flex items-center gap-3 p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-900 text-xs truncate">{l.descricao}</p>
+                    <p className="text-gray-400 text-[11px] mt-0.5">{formatData(l.data)}</p>
+                  </div>
+                  <p className="font-bold text-sm" style={{ color: l.tipo === "entrada" ? "#00B040" : "#ef4444" }}>
+                    {l.tipo === "entrada" ? "+" : "−"} {formatBRL(Number(l.valor))}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

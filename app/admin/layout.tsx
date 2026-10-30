@@ -4,15 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Car, Tag, Settings, LogOut, Menu, X, Sun, Moon, BarChart2 } from "lucide-react";
+import { Car, Tag, Settings, LogOut, Sun, Moon, BarChart2, Wallet, LayoutDashboard } from "lucide-react";
 
 const SENHA = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "mp2025";
 
+// mobile: aparece na barra inferior. Configurações fica só no desktop e no ícone do cabeçalho.
 const nav = [
-  { href: "/admin", label: "Veículos", icon: Car },
-  { href: "/admin/marcas", label: "Marcas", icon: Tag },
-  { href: "/admin/relatorio", label: "Relatório", icon: BarChart2 },
-  { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/admin", label: "Início", icon: LayoutDashboard, mobile: true },
+  { href: "/admin/veiculos", label: "Veículos", icon: Car, mobile: true },
+  { href: "/admin/financeiro", label: "Financeiro", icon: Wallet, mobile: true },
+  { href: "/admin/marcas", label: "Marcas", icon: Tag, mobile: true },
+  { href: "/admin/relatorio", label: "Relatório", icon: BarChart2, mobile: true },
+  { href: "/admin/configuracoes", label: "Configurações", icon: Settings, mobile: false },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -21,7 +24,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState(false);
-  const [sidebarAberta, setSidebarAberta] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   function login() {
     if (senha === SENHA) {
       sessionStorage.setItem("mp_admin", "ok");
+      sessionStorage.setItem("mp_admin_senha", senha);
       setAutenticado(true);
       setErro(false);
     } else {
@@ -59,6 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   function sair() {
     sessionStorage.removeItem("mp_admin");
+    sessionStorage.removeItem("mp_admin_senha");
     setAutenticado(false);
     router.push("/admin");
   }
@@ -204,6 +208,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {isDark ? <Sun size={16} strokeWidth={1.75} /> : <Moon size={16} strokeWidth={1.75} />}
         </button>
 
+        <Link href="/admin/configuracoes" className="md:hidden flex items-center justify-center w-8 h-8" style={{ color: dk.muted }} title="Configurações">
+          <Settings size={16} strokeWidth={1.75} />
+        </Link>
+
         <button
           onClick={sair}
           className="flex items-center gap-2 h-8 px-3 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider"
@@ -211,11 +219,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           <LogOut size={14} strokeWidth={1.75} />
           Sair
-        </button>
-
-        {/* Mobile: menu */}
-        <button onClick={() => setSidebarAberta(!sidebarAberta)} className="md:hidden ml-1" style={{ color: dk.muted }}>
-          {sidebarAberta ? <X size={18} /> : <Menu size={18} />}
         </button>
       </header>
 
@@ -253,41 +256,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </aside>
 
-        {/* ── Mobile sidebar overlay ── */}
-        {sidebarAberta && (
-          <div className="md:hidden fixed inset-0 z-40 flex pt-[60px]" onClick={() => setSidebarAberta(false)}>
-            <div
-              className="w-52 h-full flex flex-col shadow-xl"
-              style={{ background: dk.surface, borderRight: `1px solid ${dk.border}` }}
-              onClick={e => e.stopPropagation()}
-            >
-              <nav className="flex-1 py-2">
-                {nav.map(({ href, label, icon: Icon }) => {
-                  const ativo = pathname === href;
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setSidebarAberta(false)}
-                      className="flex items-center gap-3 h-8 px-[11px] mx-1 rounded-md transition-colors"
-                      style={{ background: ativo ? dk.navActive : "transparent" }}
-                    >
-                      <Icon size={17} strokeWidth={ativo ? 2.25 : 1.75} style={ativo ? { color: "#00B040" } : { color: dk.muted }} className="shrink-0" />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: dk.muted }}>{label}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-            <div className="flex-1 bg-black/20" />
-          </div>
-        )}
-
         {/* ── Conteúdo ── */}
-        <main className="flex-1 md:ml-12 overflow-auto">
+        <main className="flex-1 md:ml-12 overflow-auto pb-20 md:pb-0">
           {children}
         </main>
       </div>
+
+      {/* ── Navegação inferior (mobile, estilo Audis) ── */}
+      <nav
+        className="md:hidden fixed bottom-0 inset-x-0 z-50 flex items-stretch justify-around"
+        style={{ background: dk.surface, borderTop: `1px solid ${dk.border}`, paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        {nav.filter(i => i.mobile).map(({ href, label, icon: Icon }) => {
+          const ativo = pathname === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition-colors"
+              style={{ color: ativo ? "#00B040" : dk.muted }}
+            >
+              <Icon size={20} strokeWidth={ativo ? 2.25 : 1.75} />
+              <span className="text-[9px] font-semibold uppercase tracking-wider">{label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }
