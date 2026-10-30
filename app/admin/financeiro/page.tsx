@@ -141,19 +141,19 @@ export default function AdminFinanceiro() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             <div className="rounded-xl p-4" style={{ background: "#003314" }}>
               <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "#4ade80" }}>Saldo do caixa</p>
-              <p className="text-xl font-black text-white">{formatBRL(dados.resumo.saldo)}</p>
+              <p className="text-[15px] md:text-xl font-black whitespace-nowrap text-white">{formatBRL(dados.resumo.saldo)}</p>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Entradas no mês</p>
-              <p className="text-xl font-black text-gray-900">{formatBRL(dados.resumo.entradasMes)}</p>
+              <p className="text-[15px] md:text-xl font-black whitespace-nowrap text-gray-900">{formatBRL(dados.resumo.entradasMes)}</p>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Saídas no mês</p>
-              <p className="text-xl font-black text-gray-900">{formatBRL(dados.resumo.saidasMes)}</p>
+              <p className="text-[15px] md:text-xl font-black whitespace-nowrap text-gray-900">{formatBRL(dados.resumo.saidasMes)}</p>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Resultado do mês</p>
-              <p className="text-xl font-black" style={{ color: dados.resumo.resultadoMes >= 0 ? "#00B040" : "#ef4444" }}>
+              <p className="text-[15px] md:text-xl font-black whitespace-nowrap" style={{ color: dados.resumo.resultadoMes >= 0 ? "#00B040" : "#ef4444" }}>
                 {formatBRL(dados.resumo.resultadoMes)}
               </p>
             </div>
@@ -167,19 +167,19 @@ export default function AdminFinanceiro() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Capital investido</p>
-                <p className="font-bold text-gray-900">{formatBRL(dados.estoque.capitalInvestido)}</p>
+                <p className="font-bold whitespace-nowrap text-gray-900">{formatBRL(dados.estoque.capitalInvestido)}</p>
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Venda prevista</p>
-                <p className="font-bold text-gray-900">{formatBRL(dados.estoque.valorVendaPrevisto)}</p>
+                <p className="font-bold whitespace-nowrap text-gray-900">{formatBRL(dados.estoque.valorVendaPrevisto)}</p>
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Lucro previsto</p>
-                <p className="font-bold text-gray-900">{formatBRL(dados.estoque.lucroPrevisto)}</p>
+                <p className="font-bold whitespace-nowrap text-gray-900">{formatBRL(dados.estoque.lucroPrevisto)}</p>
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Lucro realizado</p>
-                <p className="font-bold text-gray-900">{formatBRL(dados.estoque.lucroRealizado)}</p>
+                <p className="font-bold whitespace-nowrap text-gray-900">{formatBRL(dados.estoque.lucroRealizado)}</p>
               </div>
             </div>
           </div>
